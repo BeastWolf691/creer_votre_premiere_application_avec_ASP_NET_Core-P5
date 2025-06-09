@@ -15,20 +15,6 @@ namespace P5CreateFirstAppAspDotNet.Models.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Repair>> GetAllRepairsAsync()
-        {
-            return await _context.Repairs
-                .Include(r => r.Vehicle)
-                .ToListAsync();
-        }
-
-        public async Task<Repair> GetRepairByIdAsync(int id)
-        {
-            return await _context.Repairs
-                .Include(r => r.Vehicle)
-                .FirstOrDefaultAsync(r => r.RepairId == id);
-        }
-
         public async Task AddRepairAsync(Repair repair)
         {
             await _context.Repairs.AddAsync(repair);

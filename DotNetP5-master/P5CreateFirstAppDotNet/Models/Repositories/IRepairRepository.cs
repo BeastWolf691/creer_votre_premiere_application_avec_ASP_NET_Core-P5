@@ -6,8 +6,6 @@ namespace P5CreateFirstAppAspDotNet.Models.Repositories
 {
     public interface IRepairRepository
     {
-        Task<IEnumerable<Repair>> GetAllRepairsAsync();
-        Task<Repair> GetRepairByIdAsync(int id);
         Task AddRepairAsync(Repair repair);
         Task UpdateRepairAsync(Repair repair);
     }

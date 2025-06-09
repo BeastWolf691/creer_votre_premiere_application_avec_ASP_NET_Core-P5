@@ -14,13 +14,12 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.11" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+    <PackageReference Include="System.Text.Json" Version="8.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Entities\" />
     <Folder Include="Models\ViewModels\" />
     <Folder Include="Models\Services\" />
-    <Folder Include="Models\Repositories\" />
   </ItemGroup>
 
 </Project>

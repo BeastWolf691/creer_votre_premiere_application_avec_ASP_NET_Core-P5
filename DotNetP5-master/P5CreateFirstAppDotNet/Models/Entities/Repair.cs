@@ -10,13 +10,9 @@ namespace P5CreateFirstAppAspDotNet.Models.Entities
 
         // Propriétés de l'entité Repair
         public int RepairId { get; set; }
-        public DateTime RepairDate { get; set; }
         public decimal RepairCost { get; set; }
-        public string Description { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
-        // Clé étrangère vers Vehicle
-        public int? VehicleId { get; set; }
-        public Vehicle? Vehicle { get; set; }
 
     }
 }

@@ -17,7 +17,7 @@ namespace P5CreateFirstAppAspDotNet.Models.Entities
 
         // Propriétés de l'entité Vehicle
         public int VehicleId { get; set; }
-        public int VinCode { get; set; }
+        public string VinCode { get; set; } = string.Empty;
         public int Year { get; set; }
         public DateTime PurchaseDate { get; set; }
         public decimal PurchasePrice { get; set; }

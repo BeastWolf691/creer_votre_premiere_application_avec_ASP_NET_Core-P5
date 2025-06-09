@@ -32,7 +32,7 @@ namespace P5CreateFirstAppAspDotNet.Models.Repositories
                     .ThenInclude(m => m.Brand)
                 .Include(v => v.Trim)
                 .Include(v => v.Repairs)
-                .FirstOrDefaultAsync(v => v.VehicleId == id);
+                .FirstAsync(v => v.VehicleId == id);
         }
 
         public async Task AddVehicleAsync(Vehicle vehicle)
@@ -45,6 +45,28 @@ namespace P5CreateFirstAppAspDotNet.Models.Repositories
         {
             _context.Entry(vehicle).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateVehicleStatusAsync(int vehicleId, VehicleStatus newStatus)
+        {
+            var vehicle = await _context.Vehicles.FindAsync(vehicleId);
+            if (vehicle == null)
+                throw new KeyNotFoundException($"Le véhicule avec l'ID {vehicleId} est introuvable.");
+
+            vehicle.Status = newStatus;
+            _context.Entry(vehicle).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Vehicle>> GetVehiclesByStatusAsync(VehicleStatus status)
+        {
+            return await _context.Vehicles
+                .Where(v => v.Status == status)
+                .Include(v => v.Model)
+                    .ThenInclude(m => m.Brand)
+                .Include(v => v.Trim)
+                .Include(v => v.Repairs)
+                .ToListAsync();
         }
 
     }
