@@ -19,7 +19,8 @@ namespace P5CreateFirstAppAspDotNet.Models.Repositories
         }
         public async Task<Brand> GetBrandByIdAsync(int id)
         {
-            return await _context.Brands.FindAsync(id);
+            return await _context.Brands.FindAsync(id) 
+                ?? throw new KeyNotFoundException($"Brand with ID {id} not found.");
         }
         public async Task AddBrandAsync(Brand brand)
         {

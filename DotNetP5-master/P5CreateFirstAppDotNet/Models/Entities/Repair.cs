@@ -13,6 +13,8 @@ namespace P5CreateFirstAppAspDotNet.Models.Entities
         public decimal RepairCost { get; set; }
         public string Name { get; set; } = string.Empty;
 
+        public int? VehicleId { get; set; }
+        public Vehicle? Vehicle { get; set; }
 
     }
 }

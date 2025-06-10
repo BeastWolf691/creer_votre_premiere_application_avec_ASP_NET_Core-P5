@@ -19,10 +19,8 @@ namespace P5CreateFirstAppAspDotNet.Models.Repositories
         }
         public async Task<Model> GetModelByIdAsync(int id)
         {
-            var model = await _context.Models.FindAsync(id);
-            if (model == null)
-                throw new KeyNotFoundException($"Model with id {id} not found.");
-            return model;
+            return await _context.Models.FindAsync(id)
+                ?? throw new KeyNotFoundException($"Model with ID {id} not found.");
         }
         public async Task AddModelAsync(Model model)
         {

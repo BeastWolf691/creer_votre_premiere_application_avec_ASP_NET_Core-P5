@@ -49,9 +49,8 @@ namespace P5CreateFirstAppAspDotNet.Models.Repositories
 
         public async Task UpdateVehicleStatusAsync(int vehicleId, VehicleStatus newStatus)
         {
-            var vehicle = await _context.Vehicles.FindAsync(vehicleId);
-            if (vehicle == null)
-                throw new KeyNotFoundException($"Le véhicule avec l'ID {vehicleId} est introuvable.");
+            var vehicle = await _context.Vehicles.FindAsync(vehicleId) 
+                ?? throw new KeyNotFoundException($"Le véhicule avec l'ID {vehicleId} est introuvable.");
 
             vehicle.Status = newStatus;
             _context.Entry(vehicle).State = EntityState.Modified;

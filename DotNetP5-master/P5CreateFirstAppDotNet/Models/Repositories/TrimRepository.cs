@@ -22,10 +22,8 @@ namespace P5CreateFirstAppAspDotNet.Models.Repositories
 
         public async Task<Trim> GetTrimByIdAsync(int id)
         {
-            var repair = await _context.Trims.FindAsync(id);
-            if (repair == null)
-                throw new KeyNotFoundException($"Trim with id {id} not found.");
-            return repair;
+            return await _context.Trims.FindAsync(id)
+                ?? throw new KeyNotFoundException($"Trim with ID {id} not found.");
         }
 
         public async Task AddTrimAsync(Trim trim)
