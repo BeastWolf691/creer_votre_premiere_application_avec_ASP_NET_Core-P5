@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using P5CreateFirstAppAspDotNet.Models.Entities;
+using P5CreateFirstAppDotNet.Models.Entities;
 using P5CreateFirstAppDotNet.Data;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace P5CreateFirstAppAspDotNet.Models.Repositories
+namespace P5CreateFirstAppDotNet.Models.Repositories
 {
     public class TrimRepository : ITrimRepository
     {
@@ -25,7 +25,6 @@ namespace P5CreateFirstAppAspDotNet.Models.Repositories
             return await _context.Trims.FindAsync(id)
                 ?? throw new KeyNotFoundException($"Trim with ID {id} not found.");
         }
-
         public async Task AddTrimAsync(Trim trim)
         {
             await _context.Trims.AddAsync(trim);

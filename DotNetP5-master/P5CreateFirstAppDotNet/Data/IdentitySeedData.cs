@@ -7,7 +7,7 @@ namespace P5CreateFirstAppDotNet.Data
 {
     public static class IdentitySeedData
     {
-        private const string AdminUser = "Admin";
+        private const string AdminEmail = "admin@example.com";
         private const string AdminPassword = "P@ssword123";
 
         public static async Task EnsurePopulated(IApplicationBuilder app)
@@ -23,13 +23,13 @@ namespace P5CreateFirstAppDotNet.Data
                 await roleManager.CreateAsync(new IdentityRole(roleName));
             }
 
-            var user = await userManager.FindByEmailAsync(AdminUser);
+            var user = await userManager.FindByEmailAsync(AdminEmail);
             if (user == null)
             {
                 user = new IdentityUser
                 {
-                    UserName = AdminUser,
-                    Email = AdminUser,
+                    UserName = AdminEmail,
+                    Email = AdminEmail,
                     EmailConfirmed = true
                 };
 

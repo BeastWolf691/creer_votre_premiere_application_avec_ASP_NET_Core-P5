@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using P5CreateFirstAppAspDotNet.Models.Entities;
+using P5CreateFirstAppDotNet.Models.Entities;
 
 namespace P5CreateFirstAppDotNet.Data
 {

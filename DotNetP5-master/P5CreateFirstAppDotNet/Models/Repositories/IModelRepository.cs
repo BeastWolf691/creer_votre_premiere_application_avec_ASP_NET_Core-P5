@@ -1,8 +1,8 @@
-﻿using P5CreateFirstAppAspDotNet.Models.Entities;
+﻿using P5CreateFirstAppDotNet.Models.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace P5CreateFirstAppAspDotNet.Models.Repositories
+namespace P5CreateFirstAppDotNet.Models.Repositories
 {
     public interface IModelRepository
     {

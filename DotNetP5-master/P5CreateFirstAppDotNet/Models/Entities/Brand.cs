@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using P5CreateFirstAppAspDotNet.Models.Entities;
+using P5CreateFirstAppDotNet.Models.Entities;
 
-namespace P5CreateFirstAppAspDotNet.Models.Entities
+namespace P5CreateFirstAppDotNet.Models.Entities
 {
     public class Brand
     {
