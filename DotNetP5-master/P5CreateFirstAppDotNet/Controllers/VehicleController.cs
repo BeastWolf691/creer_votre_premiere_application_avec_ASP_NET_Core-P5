@@ -14,7 +14,6 @@ namespace P5CreateFirstAppDotNet.Controllers
             _vehicleRepository = vehicleRepository;
         }
 
-
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -40,6 +39,7 @@ namespace P5CreateFirstAppDotNet.Controllers
         {
             if (ModelState.IsValid)
             {
+                vehicle.CalculateSalePrice();
                 await _vehicleRepository.AddVehicleAsync(vehicle);
                 return RedirectToAction("Index");
             }
@@ -52,6 +52,7 @@ namespace P5CreateFirstAppDotNet.Controllers
         {
             if (ModelState.IsValid)
             {
+                vehicle.CalculateSalePrice();
                 await _vehicleRepository.UpdateVehicleAsync(vehicle);
                 return RedirectToAction("Index");
             }

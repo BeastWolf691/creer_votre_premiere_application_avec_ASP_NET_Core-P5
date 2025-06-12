@@ -10,8 +10,8 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
         Task<Vehicle> GetVehicleByIdAsync(int id);
         Task AddVehicleAsync(Vehicle vehicle);
         Task UpdateVehicleAsync(Vehicle vehicle);
-        Task UpdateVehicleStatusAsync(int vehicleId, VehicleStatus newStatus);
-        Task<IEnumerable<Vehicle>> GetVehiclesByStatusAsync(VehicleStatus status);
+        Task UpdateVehicleStatusAsync(int vehicleId, Status newStatus);
+        Task<IEnumerable<Vehicle>> GetVehiclesByStatusAsync(Status status);
 
     }
 }

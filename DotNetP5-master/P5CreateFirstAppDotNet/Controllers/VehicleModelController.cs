@@ -6,11 +6,11 @@ using P5CreateFirstAppDotNet.Models.Entities;
 
 namespace P5CreateFirstAppDotNet.Controllers
 {
-    public class ModelController : Controller
+    public class VehicleModelController : Controller
     {
-        private readonly IModelRepository _modelRepository;
+        private readonly IVehicleModelRepository _modelRepository;
 
-        public ModelController(IModelRepository modelRepository)
+        public VehicleModelController(IVehicleModelRepository modelRepository)
         {
             _modelRepository = modelRepository;
         }
@@ -20,7 +20,7 @@ namespace P5CreateFirstAppDotNet.Controllers
         public async Task<IActionResult> Admin()
         {
             var models = await _modelRepository.GetAllModelsAsync();
-            return View(models.OrderByDescending(m => m.ModelId));
+            return View(models.OrderByDescending(m => m.VehicleModelId));
         }
 
         [Authorize(Roles = "Admin")]
@@ -37,7 +37,7 @@ namespace P5CreateFirstAppDotNet.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> Create(Model model)
+        public async Task<IActionResult> Create(VehicleModel model)
         {
             if (ModelState.IsValid)
             {
@@ -49,7 +49,7 @@ namespace P5CreateFirstAppDotNet.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> Edit(Model model)
+        public async Task<IActionResult> Edit(VehicleModel model)
         {
             if (ModelState.IsValid)
             {

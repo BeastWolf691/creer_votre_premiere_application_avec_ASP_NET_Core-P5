@@ -11,6 +11,6 @@ namespace P5CreateFirstAppDotNet.Models.Entities
         public string Name { get; set; } = string.Empty;
 
         // Une marque possède plusieurs modèles
-        public ICollection<Model> Models { get; set; } = new List<Model>();
+        public ICollection<VehicleModel> VehicleModels { get; set; } = new List<VehicleModel>();
     }
 }

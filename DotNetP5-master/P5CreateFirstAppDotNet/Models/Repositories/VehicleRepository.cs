@@ -18,20 +18,22 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
         public async Task<IEnumerable<Vehicle>> GetAllVehicleAsync()
         {
             return await _context.Vehicles
-                .Include(v => v.Model)
+                .Include(v => v.VehicleModel)
                     .ThenInclude(m => m.Brand)
                 .Include(v => v.Trim)
                 .Include(v => v.Repairs)
+                .Include(v => v.Status)
                 .ToListAsync();
         }
 
         public async Task<Vehicle> GetVehicleByIdAsync(int id)
         {
             return await _context.Vehicles
-                .Include(v => v.Model)
+                .Include(v => v.VehicleModel)
                     .ThenInclude(m => m.Brand)
                 .Include(v => v.Trim)
                 .Include(v => v.Repairs)
+                .Include(v => v.Status)
                 .FirstAsync(v => v.VehicleId == id);
         }
 
@@ -47,7 +49,7 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateVehicleStatusAsync(int vehicleId, VehicleStatus newStatus)
+        public async Task UpdateVehicleStatusAsync(int vehicleId, Status newStatus)
         {
             var vehicle = await _context.Vehicles.FindAsync(vehicleId) 
                 ?? throw new KeyNotFoundException($"Le véhicule avec l'ID {vehicleId} est introuvable.");
@@ -57,14 +59,15 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Vehicle>> GetVehiclesByStatusAsync(VehicleStatus status)
+        public async Task<IEnumerable<Vehicle>> GetVehiclesByStatusAsync(Status status)
         {
             return await _context.Vehicles
-                .Where(v => v.Status == status)
-                .Include(v => v.Model)
+                .Where(v => v.StatusId == status.StatusId)
+                .Include(v => v.VehicleModel)
                     .ThenInclude(m => m.Brand)
                 .Include(v => v.Trim)
                 .Include(v => v.Repairs)
+                .Include(v => v.Status)
                 .ToListAsync();
         }
 

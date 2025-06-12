@@ -12,10 +12,11 @@ namespace P5CreateFirstAppDotNet.Data
         }
 
         public DbSet<Brand> Brands { get; set; } = null!;
-        public DbSet<Model> Models { get; set; } = null!;
+        public DbSet<VehicleModel> VehicleModels { get; set; } = null!;
         public DbSet<Trim> Trims { get; set; } = null!;
         public DbSet<Vehicle> Vehicles { get; set; } = null!;
         public DbSet<Repair> Repairs { get; set; } = null!;
+        public DbSet<Status> Statuses { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,21 +24,27 @@ namespace P5CreateFirstAppDotNet.Data
 
             modelBuilder.Entity<Vehicle>(entity =>
             {
-                entity.HasOne(v => v.Model)
-                      .WithMany(m => m.Vehicles)
-                      .HasForeignKey(v => v.ModelId);
-                entity.HasOne(v => v.Trim)
-                      .WithMany(t => t.Vehicles)
-                      .HasForeignKey(v => v.TrimId);
                 entity.HasMany(v => v.Repairs)
                       .WithOne(r => r.Vehicle)
                       .HasForeignKey(r => r.VehicleId);
-                entity.Property(v => v.Status)
-                        .HasConversion<string>()
-                        .IsRequired();
-                entity.Property(v => v.Margin).HasPrecision(18, 2);
-                entity.Property(v => v.PurchasePrice).HasPrecision(18, 2);
+
+                entity.HasOne(v => v.Status)
+                      .WithMany(s => s.Vehicles)
+                      .HasForeignKey(v => v.StatusId)
+                      .IsRequired();
+
+                entity.HasOne(v => v.VehicleModel)
+                      .WithMany(vm => vm.Vehicles)
+                      .HasForeignKey(v => v.VehicleModelId)
+                      .IsRequired();
+
+                entity.HasOne(v => v.Trim)
+                      .WithMany(t => t.Vehicles)
+                      .HasForeignKey(v => v.TrimId)
+                      .IsRequired();
+
                 entity.Property(v => v.SalePrice).HasPrecision(18, 2);
+                entity.Property(v => v.PurchasePrice).HasPrecision(18, 2);
             });
             modelBuilder.Entity<Repair>(entity =>
             {

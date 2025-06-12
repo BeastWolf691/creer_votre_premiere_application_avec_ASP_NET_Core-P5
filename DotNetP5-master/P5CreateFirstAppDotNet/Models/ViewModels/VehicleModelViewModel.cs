@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace P5CreateFirstAppDotNet.Models.ViewModels
 {
-    public class ModelViewModel
+    public class VehicleModelViewModel
     {
         
         [BindNever]

@@ -5,18 +5,18 @@ using P5CreateFirstAppDotNet.Models.Entities;
 
 namespace P5CreateFirstAppDotNet.Models.Entities
 {
-    public class Model
+    public class VehicleModel
     {
 
         // Propriétés de l'entité Model
-        public int ModelId { get; set; }
+        public int VehicleModelId { get; set; }
         public string Name { get; set; } = string.Empty;
 
         // Clé étrangère vers Brand
         public int BrandId { get; set; }
-        public required Brand Brand { get; set; }
+        public Brand Brand { get; set; } = null!;
 
-        // Un modèle peut avoir plusieurs véhicules associés
+        public ICollection<Trim> Trims { get; set; } = new List<Trim>();
         public ICollection<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
     }
 }

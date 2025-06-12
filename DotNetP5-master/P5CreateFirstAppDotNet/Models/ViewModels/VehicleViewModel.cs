@@ -17,6 +17,15 @@ namespace P5CreateFirstAppDotNet.Models.ViewModels
         [Range(1990, 2100, ErrorMessage = "L'année doit être supérieure ou égale à 1990.")]
         public int Year { get; set; }
 
+        [Required(ErrorMessage = "La marque est requise.")]
+        public int BrandId { get; set; }
+
+        [Required(ErrorMessage = "Le modèle est requis.")]
+        public int VehicleModelId { get; set; }
+
+        [Required(ErrorMessage = "La finition est requise.")]
+        public int TrimId { get; set; }
+
         [Required(ErrorMessage = "La date d'achat est requise.")]
         [DataType(DataType.Date, ErrorMessage = "La date d'achat doit être au format valide.")]
         public DateTime PurchaseDate { get; set; }
@@ -31,11 +40,12 @@ namespace P5CreateFirstAppDotNet.Models.ViewModels
 
         public DateTime? AvailableForSaleDate { get; set; }
 
-        [RegularExpression(@"^\d+(\.\d{1,2})?$", ErrorMessage = "Le prix de vente doit être un nombre valide avec jusqu'à deux décimales.")]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Le prix de vente doit être supérieur à zéro.")]
         public string? SalePrice { get; set; } 
 
         public DateTime? SaleDate { get; set; }
+
+        [Required(ErrorMessage = "Le statut du véhicule est requis.")]
+        public int StatusId { get; set; }
 
         [Url(ErrorMessage = "L'URL de l'image doit être valide.")]
         public string? ImageUrl { get; set; }

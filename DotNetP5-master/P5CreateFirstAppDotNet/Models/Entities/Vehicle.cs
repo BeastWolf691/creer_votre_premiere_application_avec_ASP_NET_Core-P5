@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using P5CreateFirstAppDotNet.Models.Entities;
 
 namespace P5CreateFirstAppDotNet.Models.Entities
 {
-    public enum VehicleStatus
-    {
-        Available,
-        Sold,
-        InRepair,
-        NotAvailable
-    }
 
     public class Vehicle
     {
@@ -20,35 +14,40 @@ namespace P5CreateFirstAppDotNet.Models.Entities
         public string VinCode { get; set; } = string.Empty;
         public int Year { get; set; }
         public DateTime PurchaseDate { get; set; }
-        public decimal PurchasePrice { get; set; }
+        public double PurchasePrice { get; set; }
         public string? Description { get; set; }
         public DateTime? AvailableForSaleDate { get; set; }
-        public decimal? SalePrice { get; set; }
+        public double? SalePrice { get; set; }
         public DateTime? SaleDate { get; set; }
         public string? ImageUrl { get; set; }
         public string? ImageThumbnailUrl { get; set; }
 
         // Statut du véhicule
-        public VehicleStatus Status { get; set; } = VehicleStatus.Available;
+        public int StatusId { get; set; }
+        public Status Status { get; set; } = null!;
 
         // Marge bénéficiaire calculée
-        public decimal Margin { get; set; }
+        private const double DefaultMargin = 500;
 
         // Coût total des réparations
-        public decimal TotalRepairCost => Repairs.Sum(r => r.RepairCost);
-
-        // Prix de revente calculé
-        public decimal ResalePrice => PurchasePrice + TotalRepairCost + Margin;
+        public double TotalRepairCost => Repairs.Sum(r => r.RepairCost);
 
         // Clé étrangère vers Model
-        public int ModelId { get; set; }
-        public required Model Model { get; set; }
+        public int VehicleModelId { get; set; }
+        public VehicleModel VehicleModel { get; set; } = null!;
 
         // Clé étrangère vers Trim (finition)
         public int TrimId { get; set; }
-        public required Trim Trim { get; set; } 
+        public Trim Trim { get; set; } = null!;
 
         // Un véhicule peut subir plusieurs réparations
         public ICollection<Repair> Repairs { get; set; } = new List<Repair>();
+
+        public void CalculateSalePrice()
+        {
+            // Si le prix de vente n'est pas défini, on le calcule
+            SalePrice = PurchasePrice + TotalRepairCost + DefaultMargin;
+            
+        }
     }
 }

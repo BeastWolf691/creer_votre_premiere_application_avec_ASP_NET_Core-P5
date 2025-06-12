@@ -11,7 +11,10 @@ namespace P5CreateFirstAppDotNet.Models.Entities
         public int TrimId { get; set; }
         public string Name { get; set; } = string.Empty;
 
-        // Une finition peut être associé à plusieurs véhicules
+        public int VehicleModelId { get; set; }
+        public VehicleModel VehicleModel { get; set; } = null!;
+
+        // Une finition peut être affecté à plusieurs véhicules
         public ICollection<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
     }
 }
