@@ -13,8 +13,7 @@ namespace P5CreateFirstAppDotNet.Models.Entities
         public double RepairCost { get; set; }
         public string Name { get; set; } = string.Empty;
 
-        public int? VehicleId { get; set; }
-        public Vehicle? Vehicle { get; set; }
+        public ICollection<VehicleRepair> VehicleRepairs { get; set; } = new List<VehicleRepair>();
 
     }
 }

@@ -12,8 +12,8 @@ using P5CreateFirstAppDotNet.Data;
 namespace P5CreateFirstAppDotNet.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250608132934_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250613183423_CreateIdentitySchema")]
+    partial class CreateIdentitySchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -227,7 +227,7 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("P5CreateFirstAppAspDotNet.Models.Entities.Brand", b =>
+            modelBuilder.Entity("P5CreateFirstAppDotNet.Models.Entities.Brand", b =>
                 {
                     b.Property<int>("BrandId")
                         .ValueGeneratedOnAdd()
@@ -237,36 +237,17 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("BrandId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Brands");
                 });
 
-            modelBuilder.Entity("P5CreateFirstAppAspDotNet.Models.Entities.Model", b =>
-                {
-                    b.Property<int>("ModelId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ModelId"));
-
-                    b.Property<int>("BrandId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ModelId");
-
-                    b.HasIndex("BrandId");
-
-                    b.ToTable("Models");
-                });
-
-            modelBuilder.Entity("P5CreateFirstAppAspDotNet.Models.Entities.Repair", b =>
+            modelBuilder.Entity("P5CreateFirstAppDotNet.Models.Entities.Repair", b =>
                 {
                     b.Property<int>("RepairId")
                         .ValueGeneratedOnAdd()
@@ -274,27 +255,40 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RepairId"));
 
-                    b.Property<string>("Description")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("RepairCost")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("RepairDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("VehicleId")
-                        .HasColumnType("int");
+                    b.Property<double>("RepairCost")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("float(18)");
 
                     b.HasKey("RepairId");
-
-                    b.HasIndex("VehicleId");
 
                     b.ToTable("Repairs");
                 });
 
-            modelBuilder.Entity("P5CreateFirstAppAspDotNet.Models.Entities.Trim", b =>
+            modelBuilder.Entity("P5CreateFirstAppDotNet.Models.Entities.Status", b =>
+                {
+                    b.Property<int>("StatusId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StatusId"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("StatusId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Statuses");
+                });
+
+            modelBuilder.Entity("P5CreateFirstAppDotNet.Models.Entities.Trim", b =>
                 {
                     b.Property<int>("TrimId")
                         .ValueGeneratedOnAdd()
@@ -304,14 +298,22 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("VehicleModelId")
+                        .HasColumnType("int");
 
                     b.HasKey("TrimId");
+
+                    b.HasIndex("VehicleModelId");
+
+                    b.HasIndex("Name", "VehicleModelId")
+                        .IsUnique();
 
                     b.ToTable("Trims");
                 });
 
-            modelBuilder.Entity("P5CreateFirstAppAspDotNet.Models.Entities.Vehicle", b =>
+            modelBuilder.Entity("P5CreateFirstAppDotNet.Models.Entities.Vehicle", b =>
                 {
                     b.Property<int>("VehicleId")
                         .ValueGeneratedOnAdd()
@@ -331,43 +333,88 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Margin")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("ModelId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("PurchaseDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("PurchasePrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("PurchasePrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("float(18)");
 
                     b.Property<DateTime?>("SaleDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal?>("SalePrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double?>("SalePrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("float(18)");
 
-                    b.Property<int>("Status")
+                    b.Property<int>("StatusId")
                         .HasColumnType("int");
 
                     b.Property<int>("TrimId")
                         .HasColumnType("int");
 
-                    b.Property<int>("VinCode")
+                    b.Property<int>("VehicleModelId")
                         .HasColumnType("int");
+
+                    b.Property<string>("VinCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("VehicleId");
 
-                    b.HasIndex("ModelId");
+                    b.HasIndex("StatusId");
 
                     b.HasIndex("TrimId");
 
+                    b.HasIndex("VehicleModelId");
+
                     b.ToTable("Vehicles");
+                });
+
+            modelBuilder.Entity("P5CreateFirstAppDotNet.Models.Entities.VehicleModel", b =>
+                {
+                    b.Property<int>("VehicleModelId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VehicleModelId"));
+
+                    b.Property<int>("BrandId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("VehicleModelId");
+
+                    b.HasIndex("BrandId");
+
+                    b.HasIndex("Name", "BrandId")
+                        .IsUnique();
+
+                    b.ToTable("VehicleModels");
+                });
+
+            modelBuilder.Entity("P5CreateFirstAppDotNet.Models.Entities.VehicleRepair", b =>
+                {
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RepairId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VehicleRepairId")
+                        .HasColumnType("int");
+
+                    b.HasKey("VehicleId", "RepairId");
+
+                    b.HasIndex("RepairId");
+
+                    b.ToTable("VehicleRepairs");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -421,10 +468,48 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("P5CreateFirstAppAspDotNet.Models.Entities.Model", b =>
+            modelBuilder.Entity("P5CreateFirstAppDotNet.Models.Entities.Trim", b =>
                 {
-                    b.HasOne("P5CreateFirstAppAspDotNet.Models.Entities.Brand", "Brand")
-                        .WithMany("Models")
+                    b.HasOne("P5CreateFirstAppDotNet.Models.Entities.VehicleModel", "VehicleModel")
+                        .WithMany("Trims")
+                        .HasForeignKey("VehicleModelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VehicleModel");
+                });
+
+            modelBuilder.Entity("P5CreateFirstAppDotNet.Models.Entities.Vehicle", b =>
+                {
+                    b.HasOne("P5CreateFirstAppDotNet.Models.Entities.Status", "Status")
+                        .WithMany("Vehicles")
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("P5CreateFirstAppDotNet.Models.Entities.Trim", "Trim")
+                        .WithMany("Vehicles")
+                        .HasForeignKey("TrimId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("P5CreateFirstAppDotNet.Models.Entities.VehicleModel", "VehicleModel")
+                        .WithMany("Vehicles")
+                        .HasForeignKey("VehicleModelId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Status");
+
+                    b.Navigation("Trim");
+
+                    b.Navigation("VehicleModel");
+                });
+
+            modelBuilder.Entity("P5CreateFirstAppDotNet.Models.Entities.VehicleModel", b =>
+                {
+                    b.HasOne("P5CreateFirstAppDotNet.Models.Entities.Brand", "Brand")
+                        .WithMany("VehicleModels")
                         .HasForeignKey("BrandId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -432,52 +517,55 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                     b.Navigation("Brand");
                 });
 
-            modelBuilder.Entity("P5CreateFirstAppAspDotNet.Models.Entities.Repair", b =>
+            modelBuilder.Entity("P5CreateFirstAppDotNet.Models.Entities.VehicleRepair", b =>
                 {
-                    b.HasOne("P5CreateFirstAppAspDotNet.Models.Entities.Vehicle", "Vehicle")
-                        .WithMany("Repairs")
-                        .HasForeignKey("VehicleId");
+                    b.HasOne("P5CreateFirstAppDotNet.Models.Entities.Repair", "Repair")
+                        .WithMany("VehicleRepairs")
+                        .HasForeignKey("RepairId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("P5CreateFirstAppDotNet.Models.Entities.Vehicle", "Vehicle")
+                        .WithMany("VehicleRepairs")
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Repair");
 
                     b.Navigation("Vehicle");
                 });
 
-            modelBuilder.Entity("P5CreateFirstAppAspDotNet.Models.Entities.Vehicle", b =>
+            modelBuilder.Entity("P5CreateFirstAppDotNet.Models.Entities.Brand", b =>
                 {
-                    b.HasOne("P5CreateFirstAppAspDotNet.Models.Entities.Model", "Model")
-                        .WithMany("Vehicles")
-                        .HasForeignKey("ModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("P5CreateFirstAppAspDotNet.Models.Entities.Trim", "Trim")
-                        .WithMany("Vehicles")
-                        .HasForeignKey("TrimId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Model");
-
-                    b.Navigation("Trim");
+                    b.Navigation("VehicleModels");
                 });
 
-            modelBuilder.Entity("P5CreateFirstAppAspDotNet.Models.Entities.Brand", b =>
+            modelBuilder.Entity("P5CreateFirstAppDotNet.Models.Entities.Repair", b =>
                 {
-                    b.Navigation("Models");
+                    b.Navigation("VehicleRepairs");
                 });
 
-            modelBuilder.Entity("P5CreateFirstAppAspDotNet.Models.Entities.Model", b =>
+            modelBuilder.Entity("P5CreateFirstAppDotNet.Models.Entities.Status", b =>
                 {
                     b.Navigation("Vehicles");
                 });
 
-            modelBuilder.Entity("P5CreateFirstAppAspDotNet.Models.Entities.Trim", b =>
+            modelBuilder.Entity("P5CreateFirstAppDotNet.Models.Entities.Trim", b =>
                 {
                     b.Navigation("Vehicles");
                 });
 
-            modelBuilder.Entity("P5CreateFirstAppAspDotNet.Models.Entities.Vehicle", b =>
+            modelBuilder.Entity("P5CreateFirstAppDotNet.Models.Entities.Vehicle", b =>
                 {
-                    b.Navigation("Repairs");
+                    b.Navigation("VehicleRepairs");
+                });
+
+            modelBuilder.Entity("P5CreateFirstAppDotNet.Models.Entities.VehicleModel", b =>
+                {
+                    b.Navigation("Trims");
+
+                    b.Navigation("Vehicles");
                 });
 #pragma warning restore 612, 618
         }

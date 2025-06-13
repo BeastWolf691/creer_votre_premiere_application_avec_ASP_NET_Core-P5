@@ -21,7 +21,7 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
                 .Include(v => v.VehicleModel)
                     .ThenInclude(m => m.Brand)
                 .Include(v => v.Trim)
-                .Include(v => v.Repairs)
+                .Include(v => v.VehicleRepairs)
                 .Include(v => v.Status)
                 .ToListAsync();
         }
@@ -32,7 +32,7 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
                 .Include(v => v.VehicleModel)
                     .ThenInclude(m => m.Brand)
                 .Include(v => v.Trim)
-                .Include(v => v.Repairs)
+                .Include(v => v.VehicleRepairs)
                 .Include(v => v.Status)
                 .FirstAsync(v => v.VehicleId == id);
         }
@@ -66,7 +66,7 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
                 .Include(v => v.VehicleModel)
                     .ThenInclude(m => m.Brand)
                 .Include(v => v.Trim)
-                .Include(v => v.Repairs)
+                .Include(v => v.VehicleRepairs)
                 .Include(v => v.Status)
                 .ToListAsync();
         }

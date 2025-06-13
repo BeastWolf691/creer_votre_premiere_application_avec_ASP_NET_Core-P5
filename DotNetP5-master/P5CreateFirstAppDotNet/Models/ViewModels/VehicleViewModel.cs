@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using P5CreateFirstAppDotNet.Models.Entities;
 
 namespace P5CreateFirstAppDotNet.Models.ViewModels
 {
@@ -52,5 +53,8 @@ namespace P5CreateFirstAppDotNet.Models.ViewModels
 
         [Url(ErrorMessage = "L'URL de la miniature doit être valide.")]
         public string? ImageThumbnailUrl { get; set; }
+
+        public List<int> SelectedRepairIds { get; set; } = new List<int>();
+        public List<Repair>? Repairs { get; set; }
     }
 }

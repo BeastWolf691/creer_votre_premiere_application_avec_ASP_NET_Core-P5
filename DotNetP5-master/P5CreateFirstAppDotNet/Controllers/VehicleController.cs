@@ -3,22 +3,30 @@ using Microsoft.AspNetCore.Mvc;
 using P5CreateFirstAppDotNet.Models.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using P5CreateFirstAppDotNet.Models.Entities;
+using P5CreateFirstAppDotNet.Models.Services;
+using P5CreateFirstAppDotNet.Models.ViewModels;
 
 namespace P5CreateFirstAppDotNet.Controllers
 {
     public class VehicleController : Controller
     {
-        private readonly IVehicleRepository _vehicleRepository;
-        public VehicleController(IVehicleRepository vehicleRepository)
+        private readonly IVehicleService _vehicleService;
+
+
+        public VehicleController(IVehicleService vehicleService)
         {
-            _vehicleRepository = vehicleRepository;
+            _vehicleService = vehicleService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var vehicles = await _vehicleRepository.GetAllVehicleAsync();
-            return View(vehicles.OrderByDescending(v => v.VehicleId));
+            var vehicleViewModels = await _vehicleService.GetAllVehicleViewModelsAsync();
+            if (vehicleViewModels == null || !vehicleViewModels.Any())
+            {
+                return View("Vehicles");
+            }
+            return View(vehicleViewModels.OrderByDescending(v => v.VehicleId));
         }
 
         [Authorize(Roles = "Admin")]
@@ -28,35 +36,38 @@ namespace P5CreateFirstAppDotNet.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public IActionResult Edit()
+        public async Task<IActionResult> Edit(int id)
         {
-            return View();
-        }
-
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
-        public async Task<IActionResult> Create(Vehicle vehicle)
-        {
-            if (ModelState.IsValid)
+            var vehicle = await _vehicleService.GetVehicleViewModelAsync(id);
+            if (vehicle == null)
             {
-                vehicle.CalculateSalePrice();
-                await _vehicleRepository.AddVehicleAsync(vehicle);
-                return RedirectToAction("Index");
+                return NotFound();
             }
             return View(vehicle);
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> Edit(Vehicle vehicle)
+        public async Task<IActionResult> Create(VehicleViewModel vehicleViewModel)
         {
             if (ModelState.IsValid)
             {
-                vehicle.CalculateSalePrice();
-                await _vehicleRepository.UpdateVehicleAsync(vehicle);
+                await _vehicleService.AddVehicleAsync(vehicleViewModel);
                 return RedirectToAction("Index");
             }
-            return View(vehicle);
+            return View(vehicleViewModel);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> Edit(VehicleViewModel vehicleViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                await _vehicleService.UpdateVehicleAsync(vehicleViewModel);
+                return RedirectToAction("Index");
+            }
+            return View(vehicleViewModel);
         }
     }
 }

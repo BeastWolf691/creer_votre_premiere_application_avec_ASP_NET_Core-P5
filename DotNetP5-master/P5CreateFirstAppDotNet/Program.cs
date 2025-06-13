@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using P5CreateFirstAppDotNet.Data;
+using P5CreateFirstAppDotNet.Data.SeedData;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,4 +49,18 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 await IdentitySeedData.EnsurePopulated(app); // Ensure identity data is seeded
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    BrandData.Initialize(services);
+    VehicleModelData.Initialize(services);
+    RepairData.Initialize(services);
+    StatusData.Initialize(services);
+    TrimData.Initialize(services);
+    VehicleData.Initialize(services);
+    VehicleRepairData.Initialize(services);
+}
+
 app.Run();

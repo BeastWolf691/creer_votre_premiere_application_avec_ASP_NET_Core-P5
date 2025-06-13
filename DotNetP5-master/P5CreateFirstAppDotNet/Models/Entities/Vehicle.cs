@@ -30,7 +30,7 @@ namespace P5CreateFirstAppDotNet.Models.Entities
         private const double DefaultMargin = 500;
 
         // Coût total des réparations
-        public double TotalRepairCost => Repairs.Sum(r => r.RepairCost);
+        public double TotalRepairCost => VehicleRepairs.Sum(vr => vr.Repair.RepairCost);
 
         // Clé étrangère vers Model
         public int VehicleModelId { get; set; }
@@ -41,7 +41,7 @@ namespace P5CreateFirstAppDotNet.Models.Entities
         public Trim Trim { get; set; } = null!;
 
         // Un véhicule peut subir plusieurs réparations
-        public ICollection<Repair> Repairs { get; set; } = new List<Repair>();
+        public ICollection<VehicleRepair> VehicleRepairs { get; set; } = new List<VehicleRepair>();
 
         public void CalculateSalePrice()
         {
