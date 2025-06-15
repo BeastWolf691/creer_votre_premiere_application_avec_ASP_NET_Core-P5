@@ -19,8 +19,7 @@ namespace P5CreateFirstAppDotNet.Models.Entities
         public DateTime? AvailableForSaleDate { get; set; }
         public double? SalePrice { get; set; }
         public DateTime? SaleDate { get; set; }
-        public string? ImageUrl { get; set; }
-        public string? ImageThumbnailUrl { get; set; }
+        public string? ImagePath { get; set; }
 
         // Statut du véhicule
         public int StatusId { get; set; }

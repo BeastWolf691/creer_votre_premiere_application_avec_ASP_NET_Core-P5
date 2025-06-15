@@ -20,3 +20,20 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+input.form-control {
+    border: solid 1px black;
+    padding : 15px;
+}
+
+.btn-custom {
+    background-color: #D9A963;
+    color: black;
+    border: none;
+    padding: 10px
+}
+
+.btn-custom:hover {
+    background-color: #B99056;
+    color: white;
+}

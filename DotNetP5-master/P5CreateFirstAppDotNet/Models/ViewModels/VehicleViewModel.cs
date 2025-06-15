@@ -48,11 +48,8 @@ namespace P5CreateFirstAppDotNet.Models.ViewModels
         [Required(ErrorMessage = "Le statut du véhicule est requis.")]
         public int StatusId { get; set; }
 
-        [Url(ErrorMessage = "L'URL de l'image doit être valide.")]
-        public string? ImageUrl { get; set; }
-
-        [Url(ErrorMessage = "L'URL de la miniature doit être valide.")]
-        public string? ImageThumbnailUrl { get; set; }
+        public IFormFile? ImageFile { get; set; }
+        public string? ImagePath { get; set; }
 
         public List<int> SelectedRepairIds { get; set; } = new List<int>();
         public List<Repair>? Repairs { get; set; }

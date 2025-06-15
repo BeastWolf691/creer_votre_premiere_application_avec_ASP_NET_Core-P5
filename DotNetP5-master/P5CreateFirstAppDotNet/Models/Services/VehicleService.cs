@@ -54,8 +54,7 @@ namespace P5CreateFirstAppDotNet.Models.Services
                 AvailableForSaleDate = vehicle.AvailableForSaleDate,
                 SalePrice = vehicle.SalePrice?.ToString(CultureInfo.InvariantCulture),
                 SaleDate = vehicle.SaleDate,
-                ImageUrl = vehicle.ImageUrl,
-                ImageThumbnailUrl = vehicle.ImageThumbnailUrl
+                ImagePath = vehicle.ImagePath
 
             };
         }
@@ -76,8 +75,7 @@ namespace P5CreateFirstAppDotNet.Models.Services
                 SalePrice = string.IsNullOrEmpty(vehicleViewModel.SalePrice) ? null : double.Parse(vehicleViewModel.SalePrice, CultureInfo.InvariantCulture),
                 SaleDate = vehicleViewModel.SaleDate,
                 StatusId = vehicleViewModel.StatusId,
-                ImageUrl = vehicleViewModel.ImageUrl,
-                ImageThumbnailUrl = vehicleViewModel.ImageThumbnailUrl,
+                ImagePath = vehicleViewModel.ImagePath
             };
         }
     }

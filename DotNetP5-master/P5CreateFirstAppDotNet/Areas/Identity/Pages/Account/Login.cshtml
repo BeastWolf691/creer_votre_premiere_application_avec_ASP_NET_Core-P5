@@ -1,0 +1,46 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Se connecter";
+}
+
+<div class="d-flex justify-content-center align-items-start" style="min-height: 80vh;">
+    <div class="container form-container col-lg-4 col-md-6 col-12 mt-5">
+        <form id="account" method="post">
+            <h1 class="text-center mb-5 mt-2">Express Voitures</h1>
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="mb-3 mt-5">
+                <label asp-for="Input.Email" class="form-label">Adresse email</label>
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-5">
+                <label asp-for="Input.Password" class="form-label">Mot de passe</label>
+                <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-5 d-grid">
+                    <button id="login-submit" type="submit" class="btn btn-custom btn-add-car">Se connecter</button>
+                </div>
+
+                <div class="col-2 d-flex justify-content-center align-items-center">
+                    <span>ou</span>
+                </div>
+
+                <div class="col-5 d-grid">
+                    <a id="create-account" class="btn btn-custom btn-add-car" asp-page="/Account/Register">S'inscrire</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
