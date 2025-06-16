@@ -33,6 +33,7 @@ namespace P5CreateFirstAppDotNet.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Repair repair)
         {
             if (ModelState.IsValid)
@@ -44,6 +45,7 @@ namespace P5CreateFirstAppDotNet.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Repair repair)
         {
             if (ModelState.IsValid)
@@ -52,6 +54,15 @@ namespace P5CreateFirstAppDotNet.Controllers
                 return RedirectToAction("Repairs");
             }
             return View(repair);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+                await _repairRepository.DeleteRepairAsync(id);
+                return RedirectToAction("Repairs");
         }
     }
 }

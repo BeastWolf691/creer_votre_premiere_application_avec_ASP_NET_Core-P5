@@ -36,6 +36,7 @@ namespace P5CreateFirstAppDotNet.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Brand brand)
         {
             if (ModelState.IsValid)
@@ -48,6 +49,7 @@ namespace P5CreateFirstAppDotNet.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Brand brand)
         {
             if (ModelState.IsValid)
@@ -57,5 +59,15 @@ namespace P5CreateFirstAppDotNet.Controllers
             }
             return View(brand);
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _brandRepository.DeleteBrandAsync(id);
+            return RedirectToAction("Brands");
+        }
+
     }
 }

@@ -37,6 +37,7 @@ namespace P5CreateFirstAppDotNet.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Trim trim)
         {
             if (ModelState.IsValid)
@@ -49,6 +50,7 @@ namespace P5CreateFirstAppDotNet.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Trim trim)
         {
             if (ModelState.IsValid)
@@ -58,6 +60,15 @@ namespace P5CreateFirstAppDotNet.Controllers
             }
             return View(trim);
 
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _trimRepository.DeleteTrimAsync(id);
+            return RedirectToAction("Trims");
         }
     }
 }

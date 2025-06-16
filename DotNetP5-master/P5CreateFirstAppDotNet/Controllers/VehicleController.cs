@@ -49,6 +49,7 @@ namespace P5CreateFirstAppDotNet.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(VehicleViewModel vehicleViewModel)
         {
             var newPath = await ProcessUploadedImageAsync(vehicleViewModel.ImageFile);
@@ -67,6 +68,7 @@ namespace P5CreateFirstAppDotNet.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(VehicleViewModel vehicleViewModel)
         {
             var newPath = await ProcessUploadedImageAsync(vehicleViewModel.ImageFile, vehicleViewModel.ImagePath);
@@ -74,7 +76,7 @@ namespace P5CreateFirstAppDotNet.Controllers
             {
                 return View(vehicleViewModel);
             }
-            
+
             if (ModelState.IsValid)
             {
                 vehicleViewModel.ImagePath = newPath;
@@ -130,5 +132,13 @@ namespace P5CreateFirstAppDotNet.Controllers
             return "/images/vehicles/" + uniqueFileName;
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _vehicleService.DeleteVehicleAsync(id);
+            return RedirectToAction("Index");
+        }
     }
 }

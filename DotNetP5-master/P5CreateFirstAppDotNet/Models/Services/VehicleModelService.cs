@@ -61,4 +61,5 @@ namespace P5CreateFirstAppDotNet.Models.Services
                 BrandId = vehicleModelViewModel.BrandId,
             };
         }
+    }
 }
