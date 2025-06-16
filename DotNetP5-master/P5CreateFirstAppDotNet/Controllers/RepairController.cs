@@ -16,7 +16,7 @@ namespace P5CreateFirstAppDotNet.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        public async Task<IActionResult> Admin()
+        public async Task<IActionResult> Index()
         {
             var repairs = await _repairRepository.GetAllRepairsAsync();
             return View(repairs.OrderByDescending(r => r.RepairId));
@@ -26,6 +26,7 @@ namespace P5CreateFirstAppDotNet.Controllers
         {
             return View();
         }
+
         [Authorize(Roles = "Admin")]
         public IActionResult Edit(int id)
         {
@@ -36,6 +37,24 @@ namespace P5CreateFirstAppDotNet.Controllers
             }
             return View(repair);
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public IActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var repair = _repairRepository.GetRepairByIdAsync(id.Value).Result;
+            if (repair == null)
+            {
+                return NotFound();
+            }
+            return View(repair);
+        }
+
+
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -44,7 +63,7 @@ namespace P5CreateFirstAppDotNet.Controllers
             if (ModelState.IsValid)
             {
                 await _repairRepository.AddRepairAsync(repair);
-                return RedirectToAction("Repairs");
+                return RedirectToAction("Index");
             }
             return View(repair);
         }
@@ -56,18 +75,23 @@ namespace P5CreateFirstAppDotNet.Controllers
             if (ModelState.IsValid)
             {
                 await _repairRepository.UpdateRepairAsync(repair);
-                return RedirectToAction("Repairs");
+                return RedirectToAction("Index");
             }
             return View(repair);
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteConfirmation(int id)
         {
-                await _repairRepository.DeleteRepairAsync(id);
-                return RedirectToAction("Repairs");
+            var repair = await _repairRepository.GetRepairByIdAsync(id);
+            if (repair == null)
+            {
+                return NotFound();
+            }
+            await _repairRepository.DeleteRepairAsync(id);
+            return View("DeleteConfirmation", repair);
         }
     }
 }

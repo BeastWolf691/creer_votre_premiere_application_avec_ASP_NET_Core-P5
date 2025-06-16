@@ -1,17 +1,21 @@
 ﻿@model IEnumerable<P5CreateFirstAppDotNet.Models.Entities.Brand>
+@Html.AntiForgeryToken()
 
 <div class="container" style="max-width: 800px; margin: 40px auto;">
 
 		<h2 class="mt-5 mb-3" style="text-align: center">Liste des marques</h2>
 
 		<div class="text-center mb-4">
-			<a class="btn btn-custom btn-add-car" asp-action="Create">Ajouter une marque</a>
+			<a class="btn btn-custom btn-add-car" asp-action="Create">+ Ajouter une marque</a>
 		</div>
 
 	<table class="table table-striped" style="width: 100%; margin: 0 auto; border-collapse: collapse;">
+		<caption id="table-description" class="visually-hidden">
+			Tableau listant toutes les marques enregistrées avec options de modification et suppression.
+		</caption>
 		<thead style="border-bottom : 1px solid black;">
 			<tr>
-				<th>Nom</th>
+				<th scope="col">Nom</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -21,8 +25,9 @@
 					<td>@brand.Name</td>
 					<td style="text-align: right; white-space: nowrap;">
 
-						<a class="btn btn-custom" asp-action="Edit" asp-route-id="@brand.BrandId">Modifier</a>
-						<a class="btn btn-danger" asp-action="Delete" asp-route-id="@brand.BrandId">Supprimer</a>
+						<a class="btn btn-custom" asp-action="Edit" asp-route-id="@brand.BrandId" aria-label="Modifier la marque @brand.Name">Modifier</a>
+						<a class="btn btn-danger" asp-action="Delete" asp-route-id="@brand.BrandId" aria-label="Supprimer la marque @brand.Name">Supprimer</a>
+
 					</td>
 				</tr>
 			}

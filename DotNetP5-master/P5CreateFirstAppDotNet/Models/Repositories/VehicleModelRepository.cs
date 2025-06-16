@@ -15,11 +15,15 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
         }
         public async Task<IEnumerable<VehicleModel>> GetAllModelsAsync()
         {
-            return await _context.VehicleModels.ToListAsync();
+            return await _context.VehicleModels
+                .Include(vm => vm.Brand)
+                .ToListAsync();
         }
         public async Task<VehicleModel> GetModelByIdAsync(int id)
         {
-            return await _context.VehicleModels.FindAsync(id)
+            return await _context.VehicleModels
+                .Include(vm => vm.Brand)
+                .FirstOrDefaultAsync(vm => vm.VehicleModelId == id)
                 ?? throw new KeyNotFoundException($"Model with ID {id} not found.");
         }
         public async Task AddModelAsync(VehicleModel model)

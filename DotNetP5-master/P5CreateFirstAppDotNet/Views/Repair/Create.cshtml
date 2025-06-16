@@ -1,0 +1,38 @@
+﻿@model P5CreateFirstAppDotNet.Models.Entities.Repair
+
+@{
+    ViewData["Title"] = "Ajouter une réparation";
+
+}
+@Html.AntiForgeryToken()
+
+
+<div class="container">
+    <a asp-action="Index" class="btn btn-return" aria-label="Retour à la liste des réparations" style="position: relative; top: 35px; text-decoration: none;">
+        &larr; Retour
+    </a>
+
+    <main style="max-width: 800px; margin: 40px auto; position: relative;">
+        <h2 class="mt-5 mb-3 text-center">Ajouter une réparation</h2>
+        <form asp-action="Create" method="post">
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label">Nom de la réparation</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger" aria-live="polite"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="RepairCost" class="form-label">Coût</label>
+                <input asp-for="RepairCost" class="form-control" type="number" />
+                <span asp-validation-for="RepairCost" class="text-danger"></span>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-custom btn-add-car">Ajouter</button>
+            </div>
+        </form>
+    </main>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

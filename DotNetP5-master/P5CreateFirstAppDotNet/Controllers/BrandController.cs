@@ -41,6 +41,22 @@ namespace P5CreateFirstAppDotNet.Controllers
         }
 
         [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public IActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var brand = _brandRepository.GetBrandByIdAsync(id.Value).Result;
+            if (brand == null)
+            {
+                return NotFound();
+            }
+            return View(brand);
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Brand brand)
@@ -67,12 +83,17 @@ namespace P5CreateFirstAppDotNet.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteConfirmation(int id)
         {
+            var brand = await _brandRepository.GetBrandByIdAsync(id);
+            if (brand == null)
+            {
+                return NotFound();
+            }
             await _brandRepository.DeleteBrandAsync(id);
-            return RedirectToAction("Index");
+            return View("DeleteConfirmation", brand);
         }
 
     }

@@ -1,0 +1,38 @@
+﻿@model IEnumerable<P5CreateFirstAppDotNet.Models.Entities.Repair>
+@Html.AntiForgeryToken()
+
+<div class="container" style="max-width: 800px; margin: 40px auto;">
+
+	<h2 class="mt-5 mb-3" style="text-align: center">Liste des réparations</h2>
+
+	<div class="text-center mb-4">
+		<a class="btn btn-custom btn-add-car" asp-action="Create">+ Ajouter une réparation</a>
+	</div>
+
+	<table aria-describedby="table-description-des-réparations" class="table table-striped" style="width: 100%; margin: 0 auto; border-collapse: collapse;">
+		<caption id="table-description" class="visually-hidden">
+			Tableau listant toutes les réparations enregistrées avec options de modification et suppression.
+		</caption>
+		<thead style="border-bottom : 1px solid black;">
+			<tr>
+				<th scope="col">Nom</th>
+				<th scope="col">Coût</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var repair in Model)
+			{
+				<tr>
+					<td>@repair.Name</td>
+					<td>@repair.RepairCost</td>
+					<td style="text-align: right; white-space: nowrap;">
+
+						<a class="btn btn-custom" asp-action="Edit" asp-route-id="@repair.RepairId" aria-label="Modifier la marque @repair.Name">Modifier</a>
+						<a class="btn btn-danger" asp-action="Delete" asp-route-id="@repair.RepairId" aria-label="Supprimer la marque @repair.Name">Supprimer</a>
+
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>
