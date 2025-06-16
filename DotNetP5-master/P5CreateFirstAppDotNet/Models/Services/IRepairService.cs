@@ -9,7 +9,7 @@ namespace P5CreateFirstAppDotNet.Models.Services
         Task<RepairViewModel> GetRepairByIdAsync(int id);
         Task AddRepairAsync(RepairViewModel repairViewModel);
         Task UpdateRepairAsync(RepairViewModel repairViewModel);
-
+        Task DeleteRepairAsync(int id);
         RepairViewModel MapToViewModel(Repair repair);
     }
 }

@@ -37,5 +37,12 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task DeleteTrimAsync(int id)
+        {
+            var trim = await GetTrimByIdAsync(id);
+            _context.Trims.Remove(trim);
+            await _context.SaveChangesAsync();
+
+        }
     }
 }

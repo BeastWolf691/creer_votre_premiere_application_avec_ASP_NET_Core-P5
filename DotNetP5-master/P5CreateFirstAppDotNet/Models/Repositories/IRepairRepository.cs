@@ -10,5 +10,6 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
         Task<Repair> GetRepairByIdAsync(int id);
         Task AddRepairAsync(Repair repair);
         Task UpdateRepairAsync(Repair repair);
+        Task DeleteRepairAsync(int id);
     }
 }

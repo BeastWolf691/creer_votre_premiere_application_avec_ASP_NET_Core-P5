@@ -7,11 +7,14 @@ namespace P5CreateFirstAppDotNet.Models.ViewModels
     {
         
         [BindNever]
-        public int ModelId { get; set; }
+        public int VehicleModelId { get; set; }
 
         [Required(ErrorMessage = "Le nom du modèle est requis.")]
         [StringLength(100, ErrorMessage = "Le nom du modèle ne peut pas dépasser 100 caractères.")]
         [RegularExpression(@"^[a-zA-ZÀ-ÿ0-9\s'-]+$", ErrorMessage = "Le nom du modèle contient des caractères invalides.")]
         public string Name { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "La marque est requise.")]
+        public int BrandId { get; set; }
     }
 }

@@ -41,6 +41,11 @@ namespace P5CreateFirstAppDotNet.Models.Services
             await _repairRepository.UpdateRepairAsync(repair);
         }
 
+        public async Task DeleteRepairAsync(int id)
+        {
+            await _repairRepository.DeleteRepairAsync(id);
+        }
+
         public RepairViewModel MapToViewModel(Repair repair)
         {
             return new RepairViewModel

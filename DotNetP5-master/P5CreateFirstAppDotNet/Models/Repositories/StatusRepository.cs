@@ -30,5 +30,12 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
             _context.Entry(status).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
+
+        public async Task DeleteStatusAsync(int id)
+        {
+            var status = await GetStatusByIdAsync(id);
+            _context.Statuses.Remove(status);
+            await _context.SaveChangesAsync();
+        }
     }
 }

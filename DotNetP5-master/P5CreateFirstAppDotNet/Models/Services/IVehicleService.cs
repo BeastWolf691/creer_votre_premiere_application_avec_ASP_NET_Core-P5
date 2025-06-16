@@ -12,5 +12,6 @@ namespace P5CreateFirstAppDotNet.Models.Services
         Task UpdateVehicleAsync(VehicleViewModel vehicleViewModel);
         VehicleViewModel MapToViewModel(Vehicle vehicle);
 
+        Task DeleteVehicleAsync(int id);
     }
 }

@@ -8,5 +8,6 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
         Task<Status> GetStatusByIdAsync(int id);
         Task AddStatusAsync(Status status);
         Task UpdateStatusAsync(Status status);
+        Task DeleteStatusAsync(int id);
     }
 }

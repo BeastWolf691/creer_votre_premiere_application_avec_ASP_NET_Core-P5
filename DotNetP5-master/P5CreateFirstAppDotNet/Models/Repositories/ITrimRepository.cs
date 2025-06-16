@@ -10,5 +10,6 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
         Task<Trim> GetTrimByIdAsync(int id);
         Task AddTrimAsync(Trim trim);
         Task UpdateTrimAsync(Trim trim);
+        Task DeleteTrimAsync(int id);
     }
 }

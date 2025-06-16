@@ -19,7 +19,7 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
         }
         public async Task<Brand> GetBrandByIdAsync(int id)
         {
-            return await _context.Brands.FindAsync(id) 
+            return await _context.Brands.FindAsync(id)
                 ?? throw new KeyNotFoundException($"Brand with ID {id} not found.");
         }
         public async Task AddBrandAsync(Brand brand)
@@ -30,6 +30,13 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
         public async Task UpdateBrandAsync(Brand brand)
         {
             _context.Entry(brand).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteBrandAsync(int id)
+        {
+            var brand = await GetBrandByIdAsync(id);
+            _context.Brands.Remove(brand);
             await _context.SaveChangesAsync();
         }
     }

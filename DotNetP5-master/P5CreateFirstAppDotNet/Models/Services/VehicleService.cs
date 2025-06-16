@@ -41,6 +41,11 @@ namespace P5CreateFirstAppDotNet.Models.Services
             await _vehicleRepository.UpdateVehicleAsync(vehicle);
         }
 
+        public async Task DeleteVehicleAsync(int id)
+        {
+            await _vehicleRepository.DeleteVehicleAsync(id);
+        }
+
         public VehicleViewModel MapToViewModel(Vehicle vehicle)
         {
             return new VehicleViewModel

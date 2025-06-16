@@ -51,7 +51,7 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
 
         public async Task UpdateVehicleStatusAsync(int vehicleId, Status newStatus)
         {
-            var vehicle = await _context.Vehicles.FindAsync(vehicleId) 
+            var vehicle = await _context.Vehicles.FindAsync(vehicleId)
                 ?? throw new KeyNotFoundException($"Le véhicule avec l'ID {vehicleId} est introuvable.");
 
             vehicle.Status = newStatus;
@@ -71,5 +71,19 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
                 .ToListAsync();
         }
 
+        public async Task DeleteVehicleAsync(int vehicleId)
+        {
+            var vehicle = await _context.Vehicles.FindAsync(vehicleId);
+            if (vehicle != null)
+            {
+                _context.Vehicles.Remove(vehicle);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new KeyNotFoundException($"Le véhicule avec l'ID {vehicleId} est introuvable.");
+            }
+
+        }
     }
 }

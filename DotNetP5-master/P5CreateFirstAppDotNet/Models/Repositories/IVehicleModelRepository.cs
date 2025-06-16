@@ -10,5 +10,6 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
         Task<VehicleModel> GetModelByIdAsync(int id);
         Task AddModelAsync(VehicleModel vehicleModel);
         Task UpdateModelAsync(VehicleModel vehicleModel);
+        Task DeleteModelAsync(int id);
     }
 }

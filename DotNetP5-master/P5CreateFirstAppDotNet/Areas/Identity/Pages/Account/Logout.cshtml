@@ -1,0 +1,19 @@
+﻿@page
+@model LogoutModel
+@{
+    ViewData["Title"] = "Déconnexion";
+}
+
+<header>
+    @{
+        if (User.Identity?.IsAuthenticated ?? false)
+        {
+            <div class="container text-center mt-5">
+                <h2 class="mb-3">Vous avez été déconnecté.</h2>
+                <p class="mb-4">Merci d'avoir utilisé Express Voitures.</p>
+
+                <a class="btn btn-custom" asp-page="/Account/Login">Retour à la page de connexion</a>
+            </div>
+        }
+    }
+</header>
