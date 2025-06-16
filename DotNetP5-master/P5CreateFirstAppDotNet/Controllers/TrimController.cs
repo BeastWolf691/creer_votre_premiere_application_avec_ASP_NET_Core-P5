@@ -30,9 +30,14 @@ namespace P5CreateFirstAppDotNet.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public IActionResult Edit()
+        public IActionResult Edit(int id)
         {
-            return View();
+            var trim = _trimRepository.GetTrimByIdAsync(id).Result;
+            if (trim == null)
+            {
+                return NotFound();
+            }
+            return View(trim);
         }
 
         [Authorize(Roles = "Admin")]

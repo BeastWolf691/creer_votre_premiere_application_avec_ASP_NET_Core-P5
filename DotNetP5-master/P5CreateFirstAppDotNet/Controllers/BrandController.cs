@@ -16,7 +16,7 @@ namespace P5CreateFirstAppDotNet.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        public async Task<IActionResult> Admin()
+        public async Task<IActionResult> Index()
         {
             var brands = await _brandRepository.GetAllBrandsAsync();
             return View(brands.OrderByDescending(b => b.BrandId));
@@ -29,9 +29,15 @@ namespace P5CreateFirstAppDotNet.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public IActionResult Edit()
+        [HttpGet]
+        public IActionResult Edit(int id)
         {
-            return View();
+            var brand = _brandRepository.GetBrandByIdAsync(id).Result;
+            if (brand == null)
+            {
+                return NotFound();
+            }
+            return View(brand);
         }
 
         [Authorize(Roles = "Admin")]
@@ -42,7 +48,7 @@ namespace P5CreateFirstAppDotNet.Controllers
             if (ModelState.IsValid)
             {
                 await _brandRepository.AddBrandAsync(brand);
-                return RedirectToAction("Brands");
+                return RedirectToAction("Index");
             }
             return View(brand);
         }
@@ -55,7 +61,7 @@ namespace P5CreateFirstAppDotNet.Controllers
             if (ModelState.IsValid)
             {
                 await _brandRepository.UpdateBrandAsync(brand);
-                return RedirectToAction("Brands");
+                return RedirectToAction("Index");
             }
             return View(brand);
         }
@@ -66,7 +72,7 @@ namespace P5CreateFirstAppDotNet.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _brandRepository.DeleteBrandAsync(id);
-            return RedirectToAction("Brands");
+            return RedirectToAction("Index");
         }
 
     }

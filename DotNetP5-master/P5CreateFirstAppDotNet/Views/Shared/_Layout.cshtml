@@ -34,9 +34,17 @@
                             </li>
                             @if (SignInManager.IsSignedIn(User))
                             {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Voiture" asp-action="Add">Ajouter une voiture</a>
-                            </li>
+                            <li class="dropdown">
+                                    <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Ajouter
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <li><a class="dropdown-item" asp-controller="Voiture" asp-action="Add">Ajouter une voiture</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Brand" asp-action="Create">Ajouter une marque</a></li>
+                                        <li><a class="dropdown-item" asp-controller="VehicleModel" asp-action="Create">Ajouter un modèle</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Repair" asp-action="Create">Ajouter une réparation</a></li>
+                                    </ul>
+                                </li>
                                 <li class="nav-item">
                                     <form method="post" asp-area="Identity" asp-page="/Account/Logout"
                                           asp-antiforgery="true" class="form-inline">

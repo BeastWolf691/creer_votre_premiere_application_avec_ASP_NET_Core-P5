@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using P5CreateFirstAppDotNet.Data;
 using P5CreateFirstAppDotNet.Data.SeedData;
+using P5CreateFirstAppDotNet.Models.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,13 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IBrandRepository, BrandRepository>();
+builder.Services.AddScoped<IVehicleModelRepository, VehicleModelRepository>();
+builder.Services.AddScoped<IRepairRepository, RepairRepository>();
+builder.Services.AddScoped<IStatusRepository, StatusRepository>();
+builder.Services.AddScoped<ITrimRepository, TrimRepository>();
+builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
+
 
 builder.Services.ConfigureApplicationCookie(options =>
 {

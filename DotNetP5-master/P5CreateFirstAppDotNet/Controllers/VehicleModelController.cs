@@ -30,9 +30,14 @@ namespace P5CreateFirstAppDotNet.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public IActionResult Edit()
+        public IActionResult Edit(int id)
         {
-            return View();
+            var model = _modelRepository.GetModelByIdAsync(id).Result;
+            if (model == null)
+            {
+                return NotFound();
+            }
+            return View(model);
         }
 
         [Authorize(Roles = "Admin")]

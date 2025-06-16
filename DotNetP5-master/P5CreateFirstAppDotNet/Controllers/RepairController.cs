@@ -27,9 +27,14 @@ namespace P5CreateFirstAppDotNet.Controllers
             return View();
         }
         [Authorize(Roles = "Admin")]
-        public IActionResult Edit()
+        public IActionResult Edit(int id)
         {
-            return View();
+            var repair = _repairRepository.GetRepairByIdAsync(id).Result;
+            if (repair == null)
+            {
+                return NotFound();
+            }
+            return View(repair);
         }
         [Authorize(Roles = "Admin")]
         [HttpPost]

@@ -37,3 +37,18 @@ input.form-control {
     background-color: #B99056;
     color: white;
 }
+
+.btn-danger {
+    background: none;
+    border: none;
+    color: red;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 6px 12px;
+    margin-left: 5px;
+    font-weight: normal;
+}
+.btn-danger:hover {
+    color: white;
+    text-decoration: underline;
+}
