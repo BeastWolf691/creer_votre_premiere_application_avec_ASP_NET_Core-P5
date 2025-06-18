@@ -5,7 +5,7 @@
 namespace P5CreateFirstAppDotNet.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateRepairCost : Migration
+    public partial class SeedInitialData : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

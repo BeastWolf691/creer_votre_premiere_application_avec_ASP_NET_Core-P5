@@ -1,0 +1,11 @@
+﻿@model P5CreateFirstAppDotNet.Models.ViewModels.VehicleViewModel
+@{
+    ViewData["Title"] = "Ajout confirmé";
+}
+
+<div class="container text-center mt-5" role="status" aria-live="polite">
+    <h2 class="text-muted">Merci !</h2>
+    <p>Votre voiture a bien été publiée.</p>
+    <a href="@Url.Action("Index", "Vehicle")" class="btn btn-custom">Retour à l'accueil</a>
+</div>
+

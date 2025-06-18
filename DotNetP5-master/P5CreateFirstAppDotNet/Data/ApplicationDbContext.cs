@@ -28,19 +28,19 @@ namespace P5CreateFirstAppDotNet.Data
                 entity.HasOne(v => v.Status)
                       .WithMany(s => s.Vehicles)
                       .HasForeignKey(v => v.StatusId)
-                      .OnDelete(DeleteBehavior.SetNull);
+                      .OnDelete(DeleteBehavior.Restrict);
 
 
                 entity.HasOne(v => v.VehicleModel)
                       .WithMany(vm => vm.Vehicles)
                       .HasForeignKey(v => v.VehicleModelId)
-                      .OnDelete(DeleteBehavior.SetNull);
+                      .OnDelete(DeleteBehavior.Restrict);
 
 
                 entity.HasOne(v => v.Trim)
                       .WithMany(t => t.Vehicles)
                       .HasForeignKey(v => v.TrimId)
-                      .OnDelete(DeleteBehavior.SetNull);
+                      .OnDelete(DeleteBehavior.Restrict);
                    
 
                 entity.Property(v => v.SalePrice).HasPrecision(18, 2);
@@ -56,6 +56,34 @@ namespace P5CreateFirstAppDotNet.Data
                       .HasForeignKey(vr => vr.RepairId);
             });
 
+
+            modelBuilder.Entity<Brand>(entity =>
+            {
+                entity.HasIndex(b => b.Name).IsUnique();
+            });
+
+            modelBuilder.Entity<VehicleModel>(entity =>
+            { 
+                entity.HasOne(vm => vm.Brand)
+                      .WithMany(b => b.VehicleModels)
+                      .HasForeignKey(vm => vm.BrandId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Trim>(entity =>
+            {
+                entity.HasOne(t => t.VehicleModel)
+                      .WithMany(vm => vm.Trims)
+                      .HasForeignKey(t => t.VehicleModelId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Status>(entity =>
+            {
+                entity.HasIndex(s => s.Name).IsUnique();
+            });
+
+
             modelBuilder.Entity<VehicleRepair>(entity =>
             {
                 entity.HasKey(vr => new { vr.VehicleId, vr.RepairId });
@@ -68,33 +96,6 @@ namespace P5CreateFirstAppDotNet.Data
                       .WithMany(r => r.VehicleRepairs)
                       .HasForeignKey(vr => vr.RepairId);
             });
-
-            modelBuilder.Entity<Brand>(entity =>
-            {
-                entity.HasIndex(b => b.Name).IsUnique();
-            });
-
-            modelBuilder.Entity<VehicleModel>(entity =>
-            { 
-                entity.HasOne(vm => vm.Brand)
-                      .WithMany(b => b.VehicleModels)
-                      .HasForeignKey(vm => vm.BrandId)
-                      .OnDelete(DeleteBehavior.SetNull);
-            });
-
-            modelBuilder.Entity<Trim>(entity =>
-            {
-                entity.HasOne(t => t.VehicleModel)
-                      .WithMany(vm => vm.Trims)
-                      .HasForeignKey(t => t.VehicleModelId)
-                      .OnDelete(DeleteBehavior.SetNull);
-            });
-
-            modelBuilder.Entity<Status>(entity =>
-            {
-                entity.HasIndex(s => s.Name).IsUnique();
-            });
-
 
         }
     }

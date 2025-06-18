@@ -12,8 +12,8 @@ using P5CreateFirstAppDotNet.Data;
 namespace P5CreateFirstAppDotNet.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250617181019_UpdateDeleteBehaviorOnTrimVehicleModelFK")]
-    partial class UpdateDeleteBehaviorOnTrimVehicleModelFK
+    [Migration("20250618225404_AddBrandToVehicle")]
+    partial class AddBrandToVehicle
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -321,6 +321,9 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                     b.Property<DateTime?>("AvailableForSaleDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("BrandId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -341,23 +344,24 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("float(18)");
 
-                    b.Property<int>("StatusId")
+                    b.Property<int?>("StatusId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TrimId")
+                    b.Property<int?>("TrimId")
                         .HasColumnType("int");
 
-                    b.Property<int>("VehicleModelId")
+                    b.Property<int?>("VehicleModelId")
                         .HasColumnType("int");
 
                     b.Property<string>("VinCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("VehicleId");
+
+                    b.HasIndex("BrandId");
 
                     b.HasIndex("StatusId");
 
@@ -464,30 +468,33 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                     b.HasOne("P5CreateFirstAppDotNet.Models.Entities.VehicleModel", "VehicleModel")
                         .WithMany("Trims")
                         .HasForeignKey("VehicleModelId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("VehicleModel");
                 });
 
             modelBuilder.Entity("P5CreateFirstAppDotNet.Models.Entities.Vehicle", b =>
                 {
+                    b.HasOne("P5CreateFirstAppDotNet.Models.Entities.Brand", "Brand")
+                        .WithMany()
+                        .HasForeignKey("BrandId");
+
                     b.HasOne("P5CreateFirstAppDotNet.Models.Entities.Status", "Status")
                         .WithMany("Vehicles")
                         .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("P5CreateFirstAppDotNet.Models.Entities.Trim", "Trim")
                         .WithMany("Vehicles")
                         .HasForeignKey("TrimId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("P5CreateFirstAppDotNet.Models.Entities.VehicleModel", "VehicleModel")
                         .WithMany("Vehicles")
                         .HasForeignKey("VehicleModelId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Brand");
 
                     b.Navigation("Status");
 
@@ -501,7 +508,7 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                     b.HasOne("P5CreateFirstAppDotNet.Models.Entities.Brand", "Brand")
                         .WithMany("VehicleModels")
                         .HasForeignKey("BrandId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Brand");
                 });

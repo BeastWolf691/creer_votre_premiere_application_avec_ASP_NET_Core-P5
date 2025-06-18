@@ -27,7 +27,8 @@ namespace P5CreateFirstAppDotNet.Data.SeedData
                 Description = "Toyota Corolla 2020, très bon état, faible kilométrage.",
                 AvailableForSaleDate = new DateTime(2021, 1, 15),
                 SaleDate = new DateTime(2021, 2, 15),
-                StatusId = 2, // Vendu
+                StatusId = 2, // Vendu,
+                ImagePath = "images/vehicles/default.png",
             };
 
             var vehicle2 = new Vehicle
@@ -41,7 +42,8 @@ namespace P5CreateFirstAppDotNet.Data.SeedData
                 Description = "Ford Focus 2021, excellent état, très économique.",
                 AvailableForSaleDate = new DateTime(2022, 3, 10),
                 SaleDate = new DateTime(2022, 4, 10),
-                StatusId = 2 // Vendu
+                StatusId = 2, // Vendu,
+                ImagePath = "images/vehicles/default.png",
             };
 
             // Ajout en base

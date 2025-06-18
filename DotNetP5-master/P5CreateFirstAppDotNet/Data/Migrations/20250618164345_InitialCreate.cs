@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace P5CreateFirstAppDotNet.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateIdentitySchema : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -202,8 +202,8 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                 {
                     VehicleModelId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    BrandId = table.Column<int>(type: "int", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BrandId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -213,7 +213,7 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                         column: x => x.BrandId,
                         principalTable: "Brands",
                         principalColumn: "BrandId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -222,8 +222,8 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                 {
                     TrimId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    VehicleModelId = table.Column<int>(type: "int", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    VehicleModelId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -233,7 +233,7 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                         column: x => x.VehicleModelId,
                         principalTable: "VehicleModels",
                         principalColumn: "VehicleModelId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -242,7 +242,7 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                 {
                     VehicleId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    VinCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    VinCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Year = table.Column<int>(type: "int", nullable: false),
                     PurchaseDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PurchasePrice = table.Column<double>(type: "float(18)", precision: 18, scale: 2, nullable: false),
@@ -250,15 +250,21 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                     AvailableForSaleDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     SalePrice = table.Column<double>(type: "float(18)", precision: 18, scale: 2, nullable: true),
                     SaleDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ImageThumbnailUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    StatusId = table.Column<int>(type: "int", nullable: false),
+                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BrandId = table.Column<int>(type: "int", nullable: false),
+                    StatusId = table.Column<int>(type: "int", nullable: true),
                     VehicleModelId = table.Column<int>(type: "int", nullable: false),
                     TrimId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Vehicles", x => x.VehicleId);
+                    table.ForeignKey(
+                        name: "FK_Vehicles_Brands_BrandId",
+                        column: x => x.BrandId,
+                        principalTable: "Brands",
+                        principalColumn: "BrandId",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Vehicles_Statuses_StatusId",
                         column: x => x.StatusId,
@@ -356,12 +362,6 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Trims_Name_VehicleModelId",
-                table: "Trims",
-                columns: new[] { "Name", "VehicleModelId" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Trims_VehicleModelId",
                 table: "Trims",
                 column: "VehicleModelId");
@@ -372,15 +372,14 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                 column: "BrandId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_VehicleModels_Name_BrandId",
-                table: "VehicleModels",
-                columns: new[] { "Name", "BrandId" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_VehicleRepairs_RepairId",
                 table: "VehicleRepairs",
                 column: "RepairId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vehicles_BrandId",
+                table: "Vehicles",
+                column: "BrandId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Vehicles_StatusId",

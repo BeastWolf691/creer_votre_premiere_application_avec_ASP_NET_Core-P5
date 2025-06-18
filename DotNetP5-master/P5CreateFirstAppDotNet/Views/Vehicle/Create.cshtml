@@ -16,17 +16,13 @@
             @Html.AntiForgeryToken()
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-            <div class="form-group">
-                <label asp-for="SalePrice" class="form-label">Prix de vente</label>
-                <input asp-for="SalePrice" class="form-control" readonly />
-            </div>
-
             <!-- Prix d’achat -->
             <div class="mb-3">
                 <label asp-for="PurchasePrice" class="form-label">Prix d’achat</label>
                 <input asp-for="PurchasePrice" class="form-control" />
                 <span asp-validation-for="PurchasePrice" class="text-danger"></span>
             </div>
+
             <!-- Année -->
             <div class="mb-3">
                 <label asp-for="Year" class="form-label">Année</label>
@@ -38,6 +34,12 @@
                     }
                 </select>
                 <span asp-validation-for="Year" class="text-danger"></span>
+            </div>
+            <!-- Date d'achat -->
+            <div class="mb-3">
+                <label accesskey="$0" asp-for="PurchaseDate" class="form-label">Date d'achat</label>
+                <input asp-for="PurchaseDate" class="form-control" type="date" />
+                <span asp-validation-for="PurchaseDate" class="text-danger"></span>
             </div>
 
             <!-- Marque -->
@@ -79,8 +81,17 @@
                 <span asp-validation-for="ImageFile" class="text-danger"></span>
             </div>
 
+            <!-- Status -->
+            <div class="mb-3">
+                <label asp-for="StatusId" class="form-label">Status</label>
+                <select asp-for="StatusId" asp-items="ViewBag.StatusList" class="form-select">
+                    <option value="">-- Sélectionner un statut --</option>
+                </select>
+                <span asp-validation-for="StatusId" class="text-danger"></span>
+            </div>
+
             <div class="d-grid">
-                <button type="submit" class="btn btn-custom btn-add-car">Ajouter</button>
+                <button type="submit" class="btn btn-custom btn-add-car">Publier</button>
             </div>
         </form>
     </main>

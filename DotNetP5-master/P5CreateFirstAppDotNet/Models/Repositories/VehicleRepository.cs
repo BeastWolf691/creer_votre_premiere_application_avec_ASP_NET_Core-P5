@@ -33,6 +33,7 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
                 .ThenInclude(vm => vm.Brand)
                 .Include(v => v.Trim)
                 .Include(v => v.VehicleRepairs)
+                    .ThenInclude(vr => vr.Repair)
                 .Include(v => v.Status)
                 .FirstAsync(v => v.VehicleId == id);
         }

@@ -6,6 +6,8 @@ using P5CreateFirstAppDotNet.Models.Entities;
 using P5CreateFirstAppDotNet.Models.Services;
 using P5CreateFirstAppDotNet.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace P5CreateFirstAppDotNet.Controllers
 {
@@ -16,15 +18,18 @@ namespace P5CreateFirstAppDotNet.Controllers
         private readonly IVehicleModelRepository _vehicleModelRepository;
         private readonly ITrimRepository _trimRepository;
         private readonly IBrandRepository _brandRepository;
+        private readonly IVehicleService _vehicleService;
 
 
-        public VehicleController(IVehicleRepository vehicleRepository, IStatusRepository statusRepository, IVehicleModelRepository vehicleModelRepository, ITrimRepository trimRepository, IBrandRepository brandRepository)
+        public VehicleController(IVehicleRepository vehicleRepository, IStatusRepository statusRepository, IVehicleModelRepository vehicleModelRepository, ITrimRepository trimRepository, IBrandRepository brandRepository, IVehicleService vehicleService)
         {
             _vehicleRepository = vehicleRepository;
             _statusRepository = statusRepository;
             _vehicleModelRepository = vehicleModelRepository;
             _trimRepository = trimRepository;
             _brandRepository = brandRepository;
+            _vehicleService = vehicleService;
+
         }
         private async Task LoadSelectListsAsync(int? selectedBrandId = null, int? selectedModelId = null, int? selectedTrimId = null, int? selectedStatusId = null)
         {
@@ -34,51 +39,17 @@ namespace P5CreateFirstAppDotNet.Controllers
             ViewBag.StatusList = new SelectList(await _statusRepository.GetAllStatusesAsync(), "StatusId", "Name", selectedStatusId);
         }
 
-        private Vehicle MapViewModelToEntity(VehicleViewModel vm)
-        {
-            return new Vehicle
-            {
-                VehicleId = vm.VehicleId,
-                VinCode = vm.VinCode,
-                Year = vm.Year,
-                PurchaseDate = vm.PurchaseDate,
-                PurchasePrice = double.TryParse(vm.PurchasePrice, out var p) ? p : 0,
-                Description = vm.Description,
-                AvailableForSaleDate = vm.AvailableForSaleDate,
-                SalePrice = double.TryParse(vm.SalePrice, out var s) ? s : 0,
-                ImagePath = vm.ImagePath,
-                VehicleModelId = vm.VehicleModelId,
-                TrimId = vm.TrimId,
-                StatusId = vm.StatusId
-            };
-        }
-
-        private VehicleViewModel MapVehicleToViewModel(Vehicle vehicle)
-        {
-            return new VehicleViewModel
-            {
-                VehicleId = vehicle.VehicleId,
-                VinCode = vehicle.VinCode,
-                Year = vehicle.Year,
-                PurchaseDate = vehicle.PurchaseDate,
-                PurchasePrice = vehicle.PurchasePrice.ToString("0.00"),
-                Description = vehicle.Description,
-                AvailableForSaleDate = vehicle.AvailableForSaleDate,
-                SalePrice = vehicle.SalePrice?.ToString("0.00"),
-                SaleDate = vehicle.SaleDate,
-                StatusId = vehicle.StatusId ?? 0,
-                VehicleModelId = vehicle.VehicleModelId ?? 0,
-                TrimId = vehicle.TrimId ?? 0,
-                ImagePath = vehicle.ImagePath
-            };
-        }
-
-
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var vehicles = await _vehicleRepository.GetAllVehicleAsync();
-            return View(vehicles.OrderByDescending(v => v.VehicleId));
+            var vehicles = await _vehicleService.GetAllVehicleViewModelsAsync();
+
+            if (vehicles == null || !vehicles.Any())
+            {
+                return View("NoVehiclesFound");
+            }
+
+            return View(vehicles);
         }
 
         [Authorize(Roles = "Admin")]
@@ -91,14 +62,31 @@ namespace P5CreateFirstAppDotNet.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
+        public IActionResult SuccessAdd()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Detail(int id)
+        {
+            var vm = await _vehicleService.GetVehicleViewModelAsync(id);
+            if (vm == null)
+                return NotFound();
+
+            return View(vm);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
             var vehicle = await _vehicleRepository.GetVehicleByIdAsync(id);
             if (
-                vehicle == null) 
+                vehicle == null)
                 return NotFound();
 
-            var vm = MapVehicleToViewModel(vehicle);
+            var vm = _vehicleService.MapVehicleToViewModel(vehicle);
 
             await LoadSelectListsAsync(null, vm.VehicleModelId, vm.TrimId, vm.StatusId);
             return View(vm);
@@ -106,18 +94,17 @@ namespace P5CreateFirstAppDotNet.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
-            var model = _vehicleRepository.GetVehicleByIdAsync(id.Value).Result;
-            if (model == null)
-            {
+
+            var vehicle = await _vehicleRepository.GetVehicleByIdAsync(id.Value);
+            if (vehicle == null)
                 return NotFound();
-            }
-            return View(model);
+
+            var viewModel = _vehicleService.MapVehicleToViewModel(vehicle);
+            return View(viewModel);
         }
 
         [Authorize(Roles = "Admin")]
@@ -132,11 +119,9 @@ namespace P5CreateFirstAppDotNet.Controllers
             }
 
             vm.ImagePath = await ProcessUploadedImageAsync(vm.ImageFile);
-            var vehicle = MapViewModelToEntity(vm);
+            await _vehicleService.AddVehicleAsync(vm);
 
-            vehicle.CalculateSalePrice(); // Calculer le prix de vente basé sur les réparations et la marge bénéficiaire
-            await _vehicleRepository.AddVehicleAsync(vehicle);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("SuccessAdd");
         }
 
         [Authorize(Roles = "Admin")]
@@ -144,7 +129,6 @@ namespace P5CreateFirstAppDotNet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(VehicleViewModel vm)
         {
-            Console.WriteLine($"DEBUG: VehicleId reçu = {vm.VehicleId}");
 
             if (!ModelState.IsValid)
             {
@@ -153,10 +137,8 @@ namespace P5CreateFirstAppDotNet.Controllers
             }
 
             vm.ImagePath = await ProcessUploadedImageAsync(vm.ImageFile, vm.ImagePath);
-            var vehicle = MapViewModelToEntity(vm);
+            await _vehicleService.UpdateVehicleAsync(vm);
 
-            vehicle.CalculateSalePrice(); // Calculer le prix de vente basé sur les réparations et la marge bénéficiaire
-            await _vehicleRepository.UpdateVehicleAsync(vehicle);
             return RedirectToAction(nameof(Index));
         }
 
@@ -213,7 +195,7 @@ namespace P5CreateFirstAppDotNet.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
@@ -222,8 +204,10 @@ namespace P5CreateFirstAppDotNet.Controllers
             {
                 return NotFound();
             }
-            await _vehicleRepository.DeleteVehicleAsync(id);
-            return View("DeleteConfirmation", vehicle);
+            await _vehicleService.DeleteVehicleAsync(id);
+
+            var viewModel = _vehicleService.MapVehicleToViewModel(vehicle);
+            return View("DeleteConfirmation", viewModel);
         }
     }
 }

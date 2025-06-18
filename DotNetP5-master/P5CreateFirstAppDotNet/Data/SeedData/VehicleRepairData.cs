@@ -16,11 +16,11 @@ namespace P5CreateFirstAppDotNet.Data.SeedData
             }
 
             // Exemple : Le véhicule avec l'ID 1 a eu deux réparations (ID 1 et 2)
-            var vr1 = new VehicleRepair { VehicleId = 2, RepairId = 1 };
-            var vr2 = new VehicleRepair { VehicleId = 2, RepairId = 2 };
+            var vr1 = new VehicleRepair { VehicleId = 1, RepairId = 1 };
+            var vr2 = new VehicleRepair { VehicleId = 1, RepairId = 2 };
 
             // Le véhicule 2 a eu une seule réparation
-            var vr3 = new VehicleRepair { VehicleId = 3, RepairId = 3 };
+            var vr3 = new VehicleRepair { VehicleId = 2, RepairId = 3 };
 
             context.VehicleRepairs.AddRange(vr1, vr2, vr3);
             context.SaveChanges();

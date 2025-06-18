@@ -9,8 +9,10 @@ namespace P5CreateFirstAppDotNet.Models.Services
         Task<List<VehicleViewModel>?> GetAllVehicleViewModelsAsync();
         Task<VehicleViewModel?> GetVehicleViewModelAsync(int id);
         Task AddVehicleAsync(VehicleViewModel vehicleViewModel);
+        Task AssignRepairsToVehicleAsync(int vehicleId, List<int> repairIds);
         Task UpdateVehicleAsync(VehicleViewModel vehicleViewModel);
-        VehicleViewModel MapToViewModel(Vehicle vehicle);
+        VehicleViewModel MapVehicleToViewModel(Vehicle vehicle);
+        Vehicle MapViewModelToEntity(VehicleViewModel vm);
 
         Task DeleteVehicleAsync(int id);
     }

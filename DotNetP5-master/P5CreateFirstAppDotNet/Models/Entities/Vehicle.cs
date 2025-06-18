@@ -8,10 +8,9 @@ namespace P5CreateFirstAppDotNet.Models.Entities
 
     public class Vehicle
     {
-
         // Propriétés de l'entité Vehicle
         public int VehicleId { get; set; }
-        public string VinCode { get; set; } = string.Empty;
+        public string? VinCode { get; set; }
         public int Year { get; set; }
         public DateTime PurchaseDate { get; set; }
         public double PurchasePrice { get; set; }
@@ -31,6 +30,10 @@ namespace P5CreateFirstAppDotNet.Models.Entities
         // Coût total des réparations
         public double TotalRepairCost => VehicleRepairs.Sum(vr => vr.Repair.RepairCost);
 
+        // Clé étrangère vers Brand (marque)
+        public int? BrandId { get; set; }
+        public Brand? Brand { get; set; }
+
         // Clé étrangère vers Model
         public int? VehicleModelId { get; set; }
         public VehicleModel? VehicleModel { get; set; }
@@ -46,7 +49,7 @@ namespace P5CreateFirstAppDotNet.Models.Entities
         {
             // Si le prix de vente n'est pas défini, on le calcule
             SalePrice = PurchasePrice + TotalRepairCost + DefaultMargin;
-            
+
         }
     }
 }

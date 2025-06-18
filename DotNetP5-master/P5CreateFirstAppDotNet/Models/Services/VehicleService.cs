@@ -16,37 +16,26 @@ namespace P5CreateFirstAppDotNet.Models.Services
             _vehicleRepository = vehicleRepository;
             _localizer = localizer;
         }
-
-        public async Task<List<VehicleViewModel>?> GetAllVehicleViewModelsAsync()
+        public Vehicle MapViewModelToEntity(VehicleViewModel vm)
         {
-            var vehicleEntities = await _vehicleRepository.GetAllVehicleAsync();
-            return vehicleEntities?.Select(MapToViewModel).ToList();
+            return new Vehicle
+            {
+                VehicleId = vm.VehicleId,
+                VinCode = vm.VinCode,
+                Year = vm.Year,
+                PurchaseDate = vm.PurchaseDate,
+                PurchasePrice = double.TryParse(vm.PurchasePrice, NumberStyles.Any, CultureInfo.InvariantCulture, out var p) ? p : 0,
+                Description = vm.Description,
+                AvailableForSaleDate = vm.AvailableForSaleDate,
+                SalePrice = double.TryParse(vm.SalePrice, NumberStyles.Any, CultureInfo.InvariantCulture, out var s) ? s : 0,
+                ImagePath = vm.ImagePath,
+                VehicleModelId = vm.VehicleModelId,
+                TrimId = vm.TrimId,
+                StatusId = vm.StatusId
+            };
         }
 
-        public async Task<VehicleViewModel?> GetVehicleViewModelAsync(int id)
-        {
-            var vehicle = await _vehicleRepository.GetVehicleByIdAsync(id);
-            return vehicle != null ? MapToViewModel(vehicle) : null;
-        }
-
-        public async Task AddVehicleAsync(VehicleViewModel vehicleViewModel)
-        {
-            var vehicle = MapToEntity(vehicleViewModel);
-            await _vehicleRepository.AddVehicleAsync(vehicle);
-        }
-
-        public async Task UpdateVehicleAsync(VehicleViewModel vehicleViewModel)
-        {
-            var vehicle = MapToEntity(vehicleViewModel);
-            await _vehicleRepository.UpdateVehicleAsync(vehicle);
-        }
-
-        public async Task DeleteVehicleAsync(int id)
-        {
-            await _vehicleRepository.DeleteVehicleAsync(id);
-        }
-
-        public VehicleViewModel MapToViewModel(Vehicle vehicle)
+        public VehicleViewModel MapVehicleToViewModel(Vehicle vehicle)
         {
             return new VehicleViewModel
             {
@@ -54,34 +43,75 @@ namespace P5CreateFirstAppDotNet.Models.Services
                 VinCode = vehicle.VinCode,
                 Year = vehicle.Year,
                 PurchaseDate = vehicle.PurchaseDate,
-                PurchasePrice = vehicle.PurchasePrice.ToString(CultureInfo.InvariantCulture),
                 Description = vehicle.Description,
+                PurchasePrice = vehicle.PurchasePrice.ToString("0.00", CultureInfo.InvariantCulture),
                 AvailableForSaleDate = vehicle.AvailableForSaleDate,
-                SalePrice = vehicle.SalePrice?.ToString(CultureInfo.InvariantCulture),
+                SalePrice = vehicle.SalePrice?.ToString("F2"),
                 SaleDate = vehicle.SaleDate,
-                ImagePath = vehicle.ImagePath
-
+                StatusId = vehicle.StatusId ?? 0,
+                VehicleModelId = vehicle.VehicleModelId ?? 0,
+                TrimId = vehicle.TrimId ?? 0,
+                ImagePath = vehicle.ImagePath,
+                BrandId = vehicle.VehicleModel?.Brand?.BrandId ?? 0,
+                BrandName = vehicle.VehicleModel?.Brand?.Name,
+                StatusName = vehicle.Status?.Name,
+                VehicleModelName = vehicle.VehicleModel?.Name,
+                TrimName = vehicle.Trim?.Name,
             };
         }
 
-        private Vehicle MapToEntity(VehicleViewModel vehicleViewModel)
+        public async Task<List<VehicleViewModel>?> GetAllVehicleViewModelsAsync()
         {
-            return new Vehicle
+            var vehicleEntities = await _vehicleRepository.GetAllVehicleAsync();
+            return vehicleEntities?.Select(MapVehicleToViewModel).ToList();
+        }
+
+        public async Task<VehicleViewModel?> GetVehicleViewModelAsync(int id)
+        {
+            var vehicle = await _vehicleRepository.GetVehicleByIdAsync(id);
+            return vehicle != null ? MapVehicleToViewModel(vehicle) : null;
+        }
+
+        public async Task AddVehicleAsync(VehicleViewModel vehicleViewModel)
+        {
+            var vehicle = MapViewModelToEntity(vehicleViewModel);
+            await _vehicleRepository.AddVehicleAsync(vehicle);
+        }
+
+        public async Task AssignRepairsToVehicleAsync(int vehicleId, List<int> repairIds)
+        {
+            var vehicle = await _vehicleRepository.GetVehicleByIdAsync(vehicleId);
+            if (vehicle == null)
+                throw new ArgumentException("Véhicule non trouvé.");
+
+            foreach (var repairId in repairIds)
             {
-                VehicleId = vehicleViewModel.VehicleId,
-                VinCode = vehicleViewModel.VinCode,
-                Year = vehicleViewModel.Year,
-                VehicleModelId = vehicleViewModel.VehicleModelId,
-                TrimId = vehicleViewModel.TrimId,
-                PurchaseDate = vehicleViewModel.PurchaseDate,
-                PurchasePrice = double.Parse(vehicleViewModel.PurchasePrice, CultureInfo.InvariantCulture),
-                Description = vehicleViewModel.Description,
-                AvailableForSaleDate = vehicleViewModel.AvailableForSaleDate,
-                SalePrice = string.IsNullOrEmpty(vehicleViewModel.SalePrice) ? null : double.Parse(vehicleViewModel.SalePrice, CultureInfo.InvariantCulture),
-                SaleDate = vehicleViewModel.SaleDate,
-                StatusId = vehicleViewModel.StatusId,
-                ImagePath = vehicleViewModel.ImagePath
-            };
+                bool alreadyAssigned = vehicle.VehicleRepairs.Any(vr => vr.RepairId == repairId);
+                if (!alreadyAssigned)
+                {
+                    vehicle.VehicleRepairs.Add(new VehicleRepair
+                    {
+                        VehicleId = vehicleId,
+                        RepairId = repairId
+                    });
+                }
+            }
+
+            // Recalcule le prix de vente
+            vehicle.CalculateSalePrice();
+
+            await _vehicleRepository.UpdateVehicleAsync(vehicle);
+        }
+
+        public async Task UpdateVehicleAsync(VehicleViewModel vehicleViewModel)
+        {
+            var vehicle = MapViewModelToEntity(vehicleViewModel);
+            await _vehicleRepository.UpdateVehicleAsync(vehicle);
+        }
+
+        public async Task DeleteVehicleAsync(int id)
+        {
+            await _vehicleRepository.DeleteVehicleAsync(id);
         }
     }
 }

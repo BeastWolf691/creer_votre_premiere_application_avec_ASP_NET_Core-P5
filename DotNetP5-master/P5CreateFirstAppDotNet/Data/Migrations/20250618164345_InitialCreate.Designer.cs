@@ -12,8 +12,8 @@ using P5CreateFirstAppDotNet.Data;
 namespace P5CreateFirstAppDotNet.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250617162923_MakeVehicleModelNullableInTrim")]
-    partial class MakeVehicleModelNullableInTrim
+    [Migration("20250618164345_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -298,7 +298,7 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("VehicleModelId")
                         .HasColumnType("int");
@@ -306,10 +306,6 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                     b.HasKey("TrimId");
 
                     b.HasIndex("VehicleModelId");
-
-                    b.HasIndex("Name", "VehicleModelId")
-                        .IsUnique()
-                        .HasFilter("[VehicleModelId] IS NOT NULL");
 
                     b.ToTable("Trims");
                 });
@@ -325,10 +321,14 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                     b.Property<DateTime?>("AvailableForSaleDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("BrandId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImagePath")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("PurchaseDate")
@@ -345,7 +345,7 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("float(18)");
 
-                    b.Property<int>("StatusId")
+                    b.Property<int?>("StatusId")
                         .HasColumnType("int");
 
                     b.Property<int>("TrimId")
@@ -355,13 +355,14 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("VinCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("VehicleId");
+
+                    b.HasIndex("BrandId");
 
                     b.HasIndex("StatusId");
 
@@ -468,18 +469,23 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                     b.HasOne("P5CreateFirstAppDotNet.Models.Entities.VehicleModel", "VehicleModel")
                         .WithMany("Trims")
                         .HasForeignKey("VehicleModelId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("VehicleModel");
                 });
 
             modelBuilder.Entity("P5CreateFirstAppDotNet.Models.Entities.Vehicle", b =>
                 {
+                    b.HasOne("P5CreateFirstAppDotNet.Models.Entities.Brand", "Brand")
+                        .WithMany()
+                        .HasForeignKey("BrandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("P5CreateFirstAppDotNet.Models.Entities.Status", "Status")
                         .WithMany("Vehicles")
                         .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("P5CreateFirstAppDotNet.Models.Entities.Trim", "Trim")
                         .WithMany("Vehicles")
@@ -493,6 +499,8 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("Brand");
+
                     b.Navigation("Status");
 
                     b.Navigation("Trim");
@@ -505,7 +513,7 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                     b.HasOne("P5CreateFirstAppDotNet.Models.Entities.Brand", "Brand")
                         .WithMany("VehicleModels")
                         .HasForeignKey("BrandId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Brand");
                 });
