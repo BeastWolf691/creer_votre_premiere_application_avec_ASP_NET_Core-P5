@@ -1,8 +1,7 @@
-﻿@model P5CreateFirstAppDotNet.Models.Entities.Repair
+﻿@model P5CreateFirstAppDotNet.Models.ViewModels.RepairViewModel
 @{
     ViewData["Title"] = "Supprimer une réparation";
 }
-@Html.AntiForgeryToken()
 
 <div class="container text-center mt-5">
     <h2 class="text-center my-5">Supprimer la réparation</h2>
@@ -16,8 +15,9 @@
             </dl>
 
             <form asp-action="Delete" method="post" class="text-center mt-4">
+                @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="RepairId" />
-                <button type="submit" class="btn btn-warning">Confirmer la suppression</button>
+                <button type="submit" class="btn btn-custom">Confirmer la suppression</button>
                 <a asp-action="Index" class="btn btn-secondary">Annuler</a>
             </form>
         </div>

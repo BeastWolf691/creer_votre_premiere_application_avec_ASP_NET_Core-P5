@@ -1,8 +1,15 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using P5CreateFirstAppDotNet.Data;
 using P5CreateFirstAppDotNet.Data.SeedData;
 using P5CreateFirstAppDotNet.Models.Repositories;
+
+
+var cultureInfo = new CultureInfo("fr-FR");
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,7 +67,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Vehicle}/{action=Index}/{id?}");
 app.MapRazorPages();
 
 await IdentitySeedData.EnsurePopulated(app); // Ensure identity data is seeded

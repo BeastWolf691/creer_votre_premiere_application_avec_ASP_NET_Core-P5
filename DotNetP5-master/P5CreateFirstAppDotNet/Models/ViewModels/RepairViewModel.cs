@@ -5,13 +5,10 @@ namespace P5CreateFirstAppDotNet.Models.ViewModels
 {
     public class RepairViewModel
     {
-
-        [BindNever]
         public int RepairId { get; set; }
 
         [Required(ErrorMessage = "Le coût de la réparation est requis.")]
-        [RegularExpression(@"^\d+(\.\d{1,2})?$", ErrorMessage = "Le coût de la réparation doit être un nombre valide avec jusqu'à deux décimales.")]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Le coût de la réparation doit être supérieur à zéro.")]
+        [RegularExpression(@"^\d+(\,\d{1,2})?$", ErrorMessage = "Le coût de la réparation doit être un nombre valide avec jusqu'à deux décimales.")]
         public string RepairCost { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Le nom de la réparation est requis.")]

@@ -6,8 +6,6 @@ namespace P5CreateFirstAppDotNet.Models.ViewModels
 {
     public class VehicleViewModel
     {
-
-        [BindNever]
         public int VehicleId { get; set; }
 
         [StringLength(17, MinimumLength =11, ErrorMessage = "Le code VIN doit contenir entre 11 et 17 caractères.")]
@@ -53,5 +51,6 @@ namespace P5CreateFirstAppDotNet.Models.ViewModels
 
         public List<int> SelectedRepairIds { get; set; } = new List<int>();
         public List<Repair>? Repairs { get; set; }
+        public VehicleModel? VehicleModel { get; set; }
     }
 }

@@ -52,3 +52,47 @@ input.form-control {
     color: white;
     text-decoration: underline;
 }
+
+.card {
+    min-height: 220px;
+}
+
+.vehicle-img-container {
+    width: 60%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.vehicle-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.vehicle-info {
+    width: 40%;
+    padding: 10px;
+    font-size: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.vehicle-info h5 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.vehicle-info p {
+    margin: 2px 0;
+    font-size: 0.8rem;
+}
+
+.vehicle-info strong {
+    font-weight: 600;
+}
+
+
+
+

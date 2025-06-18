@@ -22,8 +22,8 @@ namespace P5CreateFirstAppDotNet.Models.Entities
         public string? ImagePath { get; set; }
 
         // Statut du véhicule
-        public int StatusId { get; set; }
-        public Status Status { get; set; } = null!;
+        public int? StatusId { get; set; }
+        public Status? Status { get; set; }
 
         // Marge bénéficiaire calculée
         private const double DefaultMargin = 500;
@@ -32,12 +32,12 @@ namespace P5CreateFirstAppDotNet.Models.Entities
         public double TotalRepairCost => VehicleRepairs.Sum(vr => vr.Repair.RepairCost);
 
         // Clé étrangère vers Model
-        public int VehicleModelId { get; set; }
-        public VehicleModel VehicleModel { get; set; } = null!;
+        public int? VehicleModelId { get; set; }
+        public VehicleModel? VehicleModel { get; set; }
 
         // Clé étrangère vers Trim (finition)
-        public int TrimId { get; set; }
-        public Trim Trim { get; set; } = null!;
+        public int? TrimId { get; set; }
+        public Trim? Trim { get; set; }
 
         // Un véhicule peut subir plusieurs réparations
         public ICollection<VehicleRepair> VehicleRepairs { get; set; } = new List<VehicleRepair>();

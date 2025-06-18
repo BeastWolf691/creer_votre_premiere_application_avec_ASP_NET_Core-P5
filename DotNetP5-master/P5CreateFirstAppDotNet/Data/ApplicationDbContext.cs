@@ -28,19 +28,19 @@ namespace P5CreateFirstAppDotNet.Data
                 entity.HasOne(v => v.Status)
                       .WithMany(s => s.Vehicles)
                       .HasForeignKey(v => v.StatusId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                      .OnDelete(DeleteBehavior.SetNull);
 
 
                 entity.HasOne(v => v.VehicleModel)
                       .WithMany(vm => vm.Vehicles)
                       .HasForeignKey(v => v.VehicleModelId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                      .OnDelete(DeleteBehavior.SetNull);
 
 
                 entity.HasOne(v => v.Trim)
                       .WithMany(t => t.Vehicles)
                       .HasForeignKey(v => v.TrimId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                      .OnDelete(DeleteBehavior.SetNull);
                    
 
                 entity.Property(v => v.SalePrice).HasPrecision(18, 2);
@@ -75,13 +75,19 @@ namespace P5CreateFirstAppDotNet.Data
             });
 
             modelBuilder.Entity<VehicleModel>(entity =>
-            {
-                entity.HasIndex(vm => new { vm.Name, vm.BrandId }).IsUnique();
+            { 
+                entity.HasOne(vm => vm.Brand)
+                      .WithMany(b => b.VehicleModels)
+                      .HasForeignKey(vm => vm.BrandId)
+                      .OnDelete(DeleteBehavior.SetNull);
             });
 
             modelBuilder.Entity<Trim>(entity =>
             {
-                entity.HasIndex(t => new { t.Name, t.VehicleModelId }).IsUnique();
+                entity.HasOne(t => t.VehicleModel)
+                      .WithMany(vm => vm.Trims)
+                      .HasForeignKey(t => t.VehicleModelId)
+                      .OnDelete(DeleteBehavior.SetNull);
             });
 
             modelBuilder.Entity<Status>(entity =>

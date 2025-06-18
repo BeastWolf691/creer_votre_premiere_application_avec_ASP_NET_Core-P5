@@ -1,0 +1,39 @@
+﻿@model IEnumerable<P5CreateFirstAppDotNet.Models.Entities.Status>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="container" style="max-width: 800px; margin: 40px auto;">
+
+	<h2 class="mt-5 mb-3" style="text-align: center">Liste des status</h2>
+
+	<div class="text-center mb-4">
+		<a class="btn btn-custom btn-add-car" asp-action="Create">+ Ajouter un status</a>
+	</div>
+
+	<table class="table table-striped" style="width: 100%; margin: 0 auto; border-collapse: collapse;">
+		<caption id="table-description" class="visually-hidden">
+			Tableau listant tous les status enregistrés avec options de modification et suppression.
+		</caption>
+		<thead style="border-bottom : 1px solid black;">
+			<tr>
+				<th scope="col">Status</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var status in Model)
+			{
+				<tr>
+					<td>@status.Name</td>
+					<td style="text-align: right; white-space: nowrap;">
+
+						<a class="btn btn-custom" asp-action="Edit" asp-route-id="@status.StatusId" aria-label="Modifier la marque @status.Name">Modifier</a>
+						<a class="btn btn-danger" asp-action="Delete" asp-route-id="@status.StatusId" aria-label="Supprimer la marque @status.Name">Supprimer</a>
+
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>

@@ -1,0 +1,48 @@
+﻿@model IEnumerable<P5CreateFirstAppDotNet.Models.Entities.Vehicle>
+@{
+	ViewData["Title"] = "Nos Voitures";
+}
+
+<div class="container" style="max-width: 800px; margin: 40px auto;">
+
+	<h2 class="mt-5 mb-3" style="text-align: center">Nos voitures</h2>
+
+	<div class="text-center mb-4">
+		<a class="btn btn-custom btn-add-car" asp-action="Create">+ Ajouter une voiture</a>
+	</div>
+
+    <div class="row">
+        @foreach (var vehicle in Model)
+        {
+            <div class="col-md-6 mb-4">
+                <a asp-action="Edit" asp-route-id="@vehicle.VehicleId" class="text-decoration-none text-dark">
+                    <div class="card shadow-sm h-100 d-flex flex-row">
+                        <div class="vehicle-img-container">
+                            <img src="@vehicle.ImagePath" alt="Image du véhicule" class="vehicle-image" />
+                        </div>
+                        <div class="vehicle-info">
+                            <div>
+                                <h5 class="fw-bold">
+                                    Prix de vente <span class="fw-normal">@vehicle.SalePrice?.ToString("N0") €</span>
+                                </h5>
+                                <p><strong>Année :</strong> @vehicle.Year.ToString("####")</p>
+                                <p><strong>Marque :</strong> @vehicle.VehicleModel?.Brand?.Name</p>
+                                <p><strong>Modèle :</strong> @vehicle.VehicleModel?.Name</p>
+                                <p><strong>Finition :</strong> @vehicle.Trim?.Name</p>
+                            </div>
+                            @if (!string.IsNullOrEmpty(vehicle.Description))
+                            {
+                                <div>
+                                    <strong>Description :</strong>
+                                    <p><em>@vehicle.Description</em></p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+
+                </a>
+            </div>
+        }
+    </div>
+</div>

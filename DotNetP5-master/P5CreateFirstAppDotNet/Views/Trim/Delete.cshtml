@@ -1,0 +1,26 @@
+﻿@model P5CreateFirstAppDotNet.Models.Entities.Trim
+@{
+    ViewData["Title"] = "Supprimer une finition";
+}
+
+
+<div class="container text-center mt-5">
+    <h2 class="text-center my-5">Supprimer la finition</h2>
+    <h5 class="text-muted" role="alert">Es-tu sûr de vouloir supprimer cette finition ? Cette action est irréversible.</h5>
+    <hr />
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <dl class="row">
+                <dt class="col-sm-4">Nom</dt>
+                <dd class="col-sm-8">@Model.Name</dd>
+            </dl>
+
+            <form asp-action="Delete" method="post" class="text-center mt-4">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="TrimId" />
+                <button type="submit" class="btn btn-custom">Confirmer la suppression</button>
+                <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+            </form>
+        </div>
+    </div>
+</div>

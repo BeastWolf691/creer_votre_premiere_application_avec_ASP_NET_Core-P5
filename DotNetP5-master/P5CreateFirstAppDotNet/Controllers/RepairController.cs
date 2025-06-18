@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using P5CreateFirstAppDotNet.Models.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using P5CreateFirstAppDotNet.Models.Entities;
+using P5CreateFirstAppDotNet.Models.ViewModels;
+using System.Globalization;
 
 namespace P5CreateFirstAppDotNet.Controllers
 {
@@ -24,60 +26,93 @@ namespace P5CreateFirstAppDotNet.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
-            return View();
-        }
-
-        [Authorize(Roles = "Admin")]
-        public IActionResult Edit(int id)
-        {
-            var repair = _repairRepository.GetRepairByIdAsync(id).Result;
-            if (repair == null)
-            {
-                return NotFound();
-            }
-            return View(repair);
+            return View(new RepairViewModel());
         }
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            var repair = _repairRepository.GetRepairByIdAsync(id.Value).Result;
+            var repair = await _repairRepository.GetRepairByIdAsync(id);
             if (repair == null)
             {
                 return NotFound();
             }
-            return View(repair);
+
+            var model = new RepairViewModel
+            {
+                RepairId = repair.RepairId,
+                Name = repair.Name,
+                RepairCost = repair.RepairCost.ToString("F2")
+            };
+
+            return View(model);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            Console.WriteLine("RepairId reçu dans POST : ");
+            var repair = _repairRepository.GetRepairByIdAsync(id);
+            if (repair == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new RepairViewModel
+            {
+                RepairId = repair.Result.RepairId,
+                Name = repair.Result.Name,
+                RepairCost = repair.Result.RepairCost.ToString("F2")
+            };
+            return View(viewModel);
         }
 
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Repair repair)
+        public async Task<IActionResult> Create(RepairViewModel model)
         {
-            if (ModelState.IsValid)
-            {
+            if (!double.TryParse(model.RepairCost, NumberStyles.Number, new CultureInfo("fr-FR"), out double parsedCost) || parsedCost <= 0)
+                {
+                    ModelState.AddModelError(nameof(model.RepairCost), "Le coût doit être un nombre valide supérieur à zéro.");
+                    return View(model);
+                }
+
+                var repair = new Repair
+                {
+                    Name = model.Name,
+                    RepairCost = parsedCost
+                };
                 await _repairRepository.AddRepairAsync(repair);
                 return RedirectToAction("Index");
-            }
-            return View(repair);
         }
+
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Repair repair)
+        public async Task<IActionResult> Edit(RepairViewModel model)
         {
-            if (ModelState.IsValid)
+
+            if (!double.TryParse(model.RepairCost, NumberStyles.Number, new CultureInfo("fr-FR"), out double parsedCost) || parsedCost <= 0)
             {
-                await _repairRepository.UpdateRepairAsync(repair);
-                return RedirectToAction("Index");
+                ModelState.AddModelError(nameof(model.RepairCost), "Le coût doit être un nombre valide supérieur à zéro.");
+                return View(model);
             }
-            return View(repair);
+
+            var repair = await _repairRepository.GetRepairByIdAsync(model.RepairId);
+            if (repair == null)
+            {
+                return NotFound();
+            }
+
+            repair.Name = model.Name;
+            repair.RepairCost = parsedCost;
+
+            await _repairRepository.UpdateRepairAsync(repair);
+            return RedirectToAction("Index");
         }
 
         [Authorize(Roles = "Admin")]
@@ -91,7 +126,7 @@ namespace P5CreateFirstAppDotNet.Controllers
                 return NotFound();
             }
             await _repairRepository.DeleteRepairAsync(id);
-            return View("DeleteConfirmation", repair);
+            return View("DeleteConfirmation", new RepairViewModel { Name = repair.Name});
         }
     }
 }

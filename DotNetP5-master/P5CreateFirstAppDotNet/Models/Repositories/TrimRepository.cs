@@ -17,12 +17,16 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
 
         public async Task<IEnumerable<Trim>> GetAllTrimsAsync()
         {
-            return await _context.Trims.ToListAsync();
+            return await _context.Trims
+                .Include(t => t.VehicleModel)
+                .ToListAsync();
         }
 
         public async Task<Trim> GetTrimByIdAsync(int id)
         {
-            return await _context.Trims.FindAsync(id)
+            return await _context.Trims
+                .Include(t => t.VehicleModel)
+                .FirstOrDefaultAsync(t => t.TrimId == id)
                 ?? throw new KeyNotFoundException($"Trim with ID {id} not found.");
         }
         public async Task AddTrimAsync(Trim trim)

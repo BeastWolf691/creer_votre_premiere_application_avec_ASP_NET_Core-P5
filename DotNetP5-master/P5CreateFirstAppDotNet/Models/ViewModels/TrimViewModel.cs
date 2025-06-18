@@ -5,7 +5,6 @@ namespace P5CreateFirstAppDotNet.Models.ViewModels
 {
     public class TrimViewModel
     {
-        [BindNever]
         public int TrimId { get; set; }
 
         [Required]
@@ -14,6 +13,6 @@ namespace P5CreateFirstAppDotNet.Models.ViewModels
         public string Name { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Le modèle de véhicule est requis.")]
-        public int VehicleModelId { get; set; }
+        public int? VehicleModelId { get; set; }
     }
 }

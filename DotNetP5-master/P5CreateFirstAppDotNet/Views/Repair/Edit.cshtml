@@ -1,14 +1,16 @@
-﻿@model P5CreateFirstAppDotNet.Models.Entities.Repair
-@Html.ValidationSummary(true, "", new { @class = "text-danger", role = "alert", @aria_live = "assertive" })
+﻿@model P5CreateFirstAppDotNet.Models.ViewModels.RepairViewModel
 
 @{
 	ViewData["Title"] = "Modifier la réparation";
 }
-@Html.AntiForgeryToken()
+
 
 <div class="container" style="max-width: 800px; margin: 40px auto;">
-	<h2 class="mt-5 mb-3" style="text-align: center">Modifier la marque</h2>
+	<h2 class="mt-5 mb-3" style="text-align: center">Modifier la réparation</h2>
 	<form asp-action="Edit" method="post">
+		@Html.AntiForgeryToken()
+		@Html.ValidationSummary(true, "", new { @class = "text-danger", role = "alert", @aria_live = "assertive" })
+
 		<input type="hidden" asp-for="RepairId" />
 		<div class="mb-3">
 			<label asp-for="Name" class="form-label">Nom de la réparation</label>
@@ -17,7 +19,7 @@
 		</div>
 		<div class="mb-3">
 			<label asp-for="RepairCost" class="form-label">Coût</label>
-			<input asp-for="RepairCost" class="form-control" type="number"/>
+			<input asp-for="RepairCost" class="form-control" type="text"/>
 			<span asp-validation-for="RepairCost" class="text-danger"></span>
 		</div>
 		<div class="d-grid">

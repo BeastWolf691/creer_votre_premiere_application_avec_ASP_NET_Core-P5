@@ -19,7 +19,7 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
         {
             return await _context.Vehicles
                 .Include(v => v.VehicleModel)
-                    .ThenInclude(m => m.Brand)
+                    .ThenInclude(vm => vm.Brand)
                 .Include(v => v.Trim)
                 .Include(v => v.VehicleRepairs)
                 .Include(v => v.Status)
@@ -30,7 +30,7 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
         {
             return await _context.Vehicles
                 .Include(v => v.VehicleModel)
-                    .ThenInclude(m => m.Brand)
+                .ThenInclude(vm => vm.Brand)
                 .Include(v => v.Trim)
                 .Include(v => v.VehicleRepairs)
                 .Include(v => v.Status)
@@ -45,7 +45,24 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
 
         public async Task UpdateVehicleAsync(Vehicle vehicle)
         {
-            _context.Entry(vehicle).State = EntityState.Modified;
+            var existingVehicle = await _context.Vehicles.FindAsync(vehicle.VehicleId);
+            if (existingVehicle == null)
+            {
+                throw new KeyNotFoundException($"Le véhicule avec l'ID {vehicle.VehicleId} est introuvable.");
+            }
+            // Mise à jour manuelle des propriétés
+            existingVehicle.VinCode = vehicle.VinCode;
+            existingVehicle.Year = vehicle.Year;
+            existingVehicle.PurchaseDate = vehicle.PurchaseDate;
+            existingVehicle.PurchasePrice = vehicle.PurchasePrice;
+            existingVehicle.Description = vehicle.Description;
+            existingVehicle.AvailableForSaleDate = vehicle.AvailableForSaleDate;
+            existingVehicle.SalePrice = vehicle.SalePrice;
+            existingVehicle.ImagePath = vehicle.ImagePath;
+            existingVehicle.VehicleModelId = vehicle.VehicleModelId;
+            existingVehicle.TrimId = vehicle.TrimId;
+            existingVehicle.StatusId = vehicle.StatusId;
+
             await _context.SaveChangesAsync();
         }
 
@@ -64,7 +81,7 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
             return await _context.Vehicles
                 .Where(v => v.StatusId == status.StatusId)
                 .Include(v => v.VehicleModel)
-                    .ThenInclude(m => m.Brand)
+                .ThenInclude(vm => vm.Brand)
                 .Include(v => v.Trim)
                 .Include(v => v.VehicleRepairs)
                 .Include(v => v.Status)

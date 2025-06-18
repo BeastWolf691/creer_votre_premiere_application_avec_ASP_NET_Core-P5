@@ -1,0 +1,34 @@
+﻿@model P5CreateFirstAppDotNet.Models.ViewModels.StatusViewModel
+
+@{
+    ViewData["Title"] = "Ajouter un status";
+}
+
+
+<div class="container">
+    <a asp-action="Index" class="btn btn-return" aria-label="Retour à la liste des status" style="position: relative; top: 35px; text-decoration: none;">
+        &larr; Retour
+    </a>
+
+    <main style="max-width: 800px; margin: 40px auto; position: relative;">
+        <h2 class="mt-5 mb-3 text-center">Ajouter un status</h2>
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger", role = "alert", @aria_live = "assertive" })
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label">Nom du status</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger" aria-live="polite"></span>
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-custom btn-add-car">Ajouter</button>
+            </div>
+        </form>
+    </main>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

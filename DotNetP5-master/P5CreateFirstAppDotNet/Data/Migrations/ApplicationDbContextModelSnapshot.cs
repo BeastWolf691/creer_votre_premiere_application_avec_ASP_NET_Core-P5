@@ -295,17 +295,14 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("VehicleModelId")
+                    b.Property<int?>("VehicleModelId")
                         .HasColumnType("int");
 
                     b.HasKey("TrimId");
 
                     b.HasIndex("VehicleModelId");
-
-                    b.HasIndex("Name", "VehicleModelId")
-                        .IsUnique();
 
                     b.ToTable("Trims");
                 });
@@ -341,13 +338,13 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("float(18)");
 
-                    b.Property<int>("StatusId")
+                    b.Property<int?>("StatusId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TrimId")
+                    b.Property<int?>("TrimId")
                         .HasColumnType("int");
 
-                    b.Property<int>("VehicleModelId")
+                    b.Property<int?>("VehicleModelId")
                         .HasColumnType("int");
 
                     b.Property<string>("VinCode")
@@ -376,19 +373,16 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VehicleModelId"));
 
-                    b.Property<int>("BrandId")
+                    b.Property<int?>("BrandId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("VehicleModelId");
 
                     b.HasIndex("BrandId");
-
-                    b.HasIndex("Name", "BrandId")
-                        .IsUnique();
 
                     b.ToTable("VehicleModels");
                 });
@@ -467,8 +461,7 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                     b.HasOne("P5CreateFirstAppDotNet.Models.Entities.VehicleModel", "VehicleModel")
                         .WithMany("Trims")
                         .HasForeignKey("VehicleModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("VehicleModel");
                 });
@@ -478,20 +471,17 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                     b.HasOne("P5CreateFirstAppDotNet.Models.Entities.Status", "Status")
                         .WithMany("Vehicles")
                         .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("P5CreateFirstAppDotNet.Models.Entities.Trim", "Trim")
                         .WithMany("Vehicles")
                         .HasForeignKey("TrimId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("P5CreateFirstAppDotNet.Models.Entities.VehicleModel", "VehicleModel")
                         .WithMany("Vehicles")
                         .HasForeignKey("VehicleModelId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Status");
 
@@ -505,8 +495,7 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                     b.HasOne("P5CreateFirstAppDotNet.Models.Entities.Brand", "Brand")
                         .WithMany("VehicleModels")
                         .HasForeignKey("BrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Brand");
                 });

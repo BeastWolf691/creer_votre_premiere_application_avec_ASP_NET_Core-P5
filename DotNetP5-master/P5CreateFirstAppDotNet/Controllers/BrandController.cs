@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using P5CreateFirstAppDotNet.Models.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using P5CreateFirstAppDotNet.Models.Entities;
+using P5CreateFirstAppDotNet.Models.ViewModels;
 
 namespace P5CreateFirstAppDotNet.Controllers
 {
@@ -25,7 +26,7 @@ namespace P5CreateFirstAppDotNet.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
-            return View();
+            return View(new BrandViewModel());
         }
 
         [Authorize(Roles = "Admin")]
@@ -37,7 +38,13 @@ namespace P5CreateFirstAppDotNet.Controllers
             {
                 return NotFound();
             }
-            return View(brand);
+
+            var model = new BrandViewModel
+            {
+                BrandId = brand.BrandId,
+                Name = brand.Name
+            };
+            return View(model);
         }
 
         [Authorize(Roles = "Admin")]
@@ -53,33 +60,49 @@ namespace P5CreateFirstAppDotNet.Controllers
             {
                 return NotFound();
             }
-            return View(brand);
+            var model = new BrandViewModel
+            {
+                BrandId = brand.BrandId,
+                Name = brand.Name
+            };
+            return View(model);
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Brand brand)
+        public async Task<IActionResult> Create(BrandViewModel model)
         {
             if (ModelState.IsValid)
             {
+                var brand = new Brand
+                {
+                    Name = model.Name
+                };
                 await _brandRepository.AddBrandAsync(brand);
                 return RedirectToAction("Index");
             }
-            return View(brand);
+            return View(model);
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Brand brand)
+        public async Task<IActionResult> Edit(BrandViewModel model)
         {
             if (ModelState.IsValid)
             {
+                var brand = await _brandRepository.GetBrandByIdAsync(model.BrandId);
+                if (brand == null)
+                {
+                    return NotFound();
+                }
+                brand.Name = model.Name;
+
                 await _brandRepository.UpdateBrandAsync(brand);
                 return RedirectToAction("Index");
             }
-            return View(brand);
+            return View(model);
         }
 
         [Authorize(Roles = "Admin")]
@@ -93,7 +116,13 @@ namespace P5CreateFirstAppDotNet.Controllers
                 return NotFound();
             }
             await _brandRepository.DeleteBrandAsync(id);
-            return View("DeleteConfirmation", brand);
+
+            var model = new BrandViewModel
+            {
+                BrandId = brand.BrandId,
+                Name = brand.Name
+            };
+            return View("DeleteConfirmation", model);
         }
 
     }

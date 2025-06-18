@@ -1,0 +1,46 @@
+﻿@model IEnumerable<P5CreateFirstAppDotNet.Models.Entities.Trim>
+
+<div class="container" style="max-width: 800px; margin: 40px auto;">
+
+	<h2 class="mt-5 mb-3" style="text-align: center">Liste des finitions</h2>
+
+	<div class="text-center mb-4">
+		<a class="btn btn-custom btn-add-car" asp-action="Create">+ Ajouter une finition</a>
+	</div>
+
+	<table class="table table-striped" style="width: 100%; margin: 0 auto; border-collapse: collapse;">
+		<caption id="table-description" class="visually-hidden">
+			Tableau listant toutes les finitions enregistrées avec options de modification et suppression.
+		</caption>
+		<thead style="border-bottom : 1px solid black;">
+			<tr>
+				<th scope="col">Nom</th>
+				<th scope="col">Modèle associé</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var trim in Model)
+			{
+				<tr>
+					<td>@trim.Name</td>
+					<td>
+						@if (trim.VehicleModel != null && !string.IsNullOrWhiteSpace(trim.VehicleModel.Name))
+						{
+							@trim.VehicleModel.Name
+						}
+						else
+						{
+							<em>Non associée</em>
+						}
+					</td>
+					<td style="text-align: right; white-space: nowrap;">
+
+						<a class="btn btn-custom" asp-action="Edit" asp-route-id="@trim.TrimId" aria-label="Modifier la marque @trim.Name">Modifier</a>
+						<a class="btn btn-danger" asp-action="Delete" asp-route-id="@trim.TrimId" aria-label="Supprimer la marque @trim.Name">Supprimer</a>
+
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>

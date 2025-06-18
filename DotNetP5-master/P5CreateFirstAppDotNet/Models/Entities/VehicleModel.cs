@@ -13,8 +13,8 @@ namespace P5CreateFirstAppDotNet.Models.Entities
         public string Name { get; set; } = string.Empty;
 
         // Clé étrangère vers Brand
-        public int BrandId { get; set; }
-        public Brand Brand { get; set; } = null!;
+        public int? BrandId { get; set; }
+        public Brand? Brand { get; set; }
 
         public ICollection<Trim> Trims { get; set; } = new List<Trim>();
         public ICollection<Vehicle> Vehicles { get; set; } = new List<Vehicle>();

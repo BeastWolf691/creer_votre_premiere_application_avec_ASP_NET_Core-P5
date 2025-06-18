@@ -15,6 +15,6 @@ namespace P5CreateFirstAppDotNet.Models.ViewModels
         public string Name { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "La marque est requise.")]
-        public int BrandId { get; set; }
+        public int? BrandId { get; set; }
     }
 }

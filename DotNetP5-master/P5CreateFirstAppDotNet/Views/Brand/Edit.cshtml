@@ -1,14 +1,15 @@
-﻿@model P5CreateFirstAppDotNet.Models.Entities.Brand
-@Html.ValidationSummary(true, "", new { @class = "text-danger", role = "alert", @aria_live = "assertive" })
+﻿@model P5CreateFirstAppDotNet.Models.ViewModels.BrandViewModel
 
 @{
 	ViewData["Title"] = "Modifier la marque";
 }
-@Html.AntiForgeryToken()
+
 
 <div class="container" style="max-width: 800px; margin: 40px auto;">
 	<h2 class="mt-5 mb-3" style="text-align: center">Modifier la marque</h2>
 	<form asp-action="Edit" method="post">
+		@Html.AntiForgeryToken()
+		@Html.ValidationSummary(true, "", new { @class = "text-danger", role = "alert", @aria_live = "assertive" })
 		<input type="hidden" asp-for="BrandId" />
 		<div class="mb-3">
 			<label asp-for="Name" class="form-label">Nom de la marque</label>

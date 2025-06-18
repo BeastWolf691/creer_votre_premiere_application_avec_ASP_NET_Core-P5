@@ -1,11 +1,11 @@
-﻿@model P5CreateFirstAppDotNet.Models.Entities.Repair
+﻿@model P5CreateFirstAppDotNet.Models.ViewModels.RepairViewModel
 @{
     ViewData["Title"] = "Réparation supprimée";
 }
-@Html.AntiForgeryToken()
 
 <div class="container text-center mt-5" role="status" aria-live="polite">
     <h2 class="text-muted">@Model.Name</h2>
     <p>a bien été supprimée.</p>
-    <a href="@Url.Action("Index", "Repair")" class="btn btn-custom">Retour à la liste</a>
+    <a href="@Url.Action("Index", "Repair")" class="btn btn-custom">Retour à la liste des réparations</a>
 </div>
+

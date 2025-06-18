@@ -5,91 +5,171 @@ using Microsoft.AspNetCore.Authorization;
 using P5CreateFirstAppDotNet.Models.Entities;
 using P5CreateFirstAppDotNet.Models.Services;
 using P5CreateFirstAppDotNet.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace P5CreateFirstAppDotNet.Controllers
 {
     public class VehicleController : Controller
     {
-        private readonly IVehicleService _vehicleService;
+        private readonly IVehicleRepository _vehicleRepository;
+        private readonly IStatusRepository _statusRepository;
+        private readonly IVehicleModelRepository _vehicleModelRepository;
+        private readonly ITrimRepository _trimRepository;
+        private readonly IBrandRepository _brandRepository;
 
 
-        public VehicleController(IVehicleService vehicleService)
+        public VehicleController(IVehicleRepository vehicleRepository, IStatusRepository statusRepository, IVehicleModelRepository vehicleModelRepository, ITrimRepository trimRepository, IBrandRepository brandRepository)
         {
-            _vehicleService = vehicleService;
+            _vehicleRepository = vehicleRepository;
+            _statusRepository = statusRepository;
+            _vehicleModelRepository = vehicleModelRepository;
+            _trimRepository = trimRepository;
+            _brandRepository = brandRepository;
         }
+        private async Task LoadSelectListsAsync(int? selectedBrandId = null, int? selectedModelId = null, int? selectedTrimId = null, int? selectedStatusId = null)
+        {
+            ViewBag.BrandList = new SelectList(await _brandRepository.GetAllBrandsAsync(), "BrandId", "Name", selectedBrandId);
+            ViewBag.VehicleModelList = new SelectList(await _vehicleModelRepository.GetAllModelsAsync(), "VehicleModelId", "Name", selectedModelId);
+            ViewBag.TrimList = new SelectList(await _trimRepository.GetAllTrimsAsync(), "TrimId", "Name", selectedTrimId);
+            ViewBag.StatusList = new SelectList(await _statusRepository.GetAllStatusesAsync(), "StatusId", "Name", selectedStatusId);
+        }
+
+        private Vehicle MapViewModelToEntity(VehicleViewModel vm)
+        {
+            return new Vehicle
+            {
+                VehicleId = vm.VehicleId,
+                VinCode = vm.VinCode,
+                Year = vm.Year,
+                PurchaseDate = vm.PurchaseDate,
+                PurchasePrice = double.TryParse(vm.PurchasePrice, out var p) ? p : 0,
+                Description = vm.Description,
+                AvailableForSaleDate = vm.AvailableForSaleDate,
+                SalePrice = double.TryParse(vm.SalePrice, out var s) ? s : 0,
+                ImagePath = vm.ImagePath,
+                VehicleModelId = vm.VehicleModelId,
+                TrimId = vm.TrimId,
+                StatusId = vm.StatusId
+            };
+        }
+
+        private VehicleViewModel MapVehicleToViewModel(Vehicle vehicle)
+        {
+            return new VehicleViewModel
+            {
+                VehicleId = vehicle.VehicleId,
+                VinCode = vehicle.VinCode,
+                Year = vehicle.Year,
+                PurchaseDate = vehicle.PurchaseDate,
+                PurchasePrice = vehicle.PurchasePrice.ToString("0.00"),
+                Description = vehicle.Description,
+                AvailableForSaleDate = vehicle.AvailableForSaleDate,
+                SalePrice = vehicle.SalePrice?.ToString("0.00"),
+                SaleDate = vehicle.SaleDate,
+                StatusId = vehicle.StatusId ?? 0,
+                VehicleModelId = vehicle.VehicleModelId ?? 0,
+                TrimId = vehicle.TrimId ?? 0,
+                ImagePath = vehicle.ImagePath
+            };
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var vehicleViewModels = await _vehicleService.GetAllVehicleViewModelsAsync();
-            if (vehicleViewModels == null || !vehicleViewModels.Any())
-            {
-                return View("Vehicles");
-            }
-            return View(vehicleViewModels.OrderByDescending(v => v.VehicleId));
+            var vehicles = await _vehicleRepository.GetAllVehicleAsync();
+            return View(vehicles.OrderByDescending(v => v.VehicleId));
         }
 
         [Authorize(Roles = "Admin")]
-        public IActionResult Create()
+        [HttpGet]
+        public async Task<IActionResult> Create()
         {
-            return View();
+            await LoadSelectListsAsync();
+            return View(new VehicleViewModel());
         }
 
         [Authorize(Roles = "Admin")]
+        [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var vehicle = await _vehicleService.GetVehicleViewModelAsync(id);
-            if (vehicle == null)
+            var vehicle = await _vehicleRepository.GetVehicleByIdAsync(id);
+            if (
+                vehicle == null) 
+                return NotFound();
+
+            var vm = MapVehicleToViewModel(vehicle);
+
+            await LoadSelectListsAsync(null, vm.VehicleModelId, vm.TrimId, vm.StatusId);
+            return View(vm);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public IActionResult Delete(int? id)
+        {
+            if (id == null)
             {
                 return NotFound();
             }
-            return View(vehicle);
-        }
-
-
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(VehicleViewModel vehicleViewModel)
-        {
-            var newPath = await ProcessUploadedImageAsync(vehicleViewModel.ImageFile);
-            if (!ModelState.IsValid)
+            var model = _vehicleRepository.GetVehicleByIdAsync(id.Value).Result;
+            if (model == null)
             {
-                return View(vehicleViewModel);
+                return NotFound();
             }
-            if (ModelState.IsValid)
-            {
-                vehicleViewModel.ImagePath = newPath;
-                await _vehicleService.AddVehicleAsync(vehicleViewModel);
-                return RedirectToAction("Index");
-            }
-            return View(vehicleViewModel);
+            return View(model);
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(VehicleViewModel vehicleViewModel)
+        public async Task<IActionResult> Create(VehicleViewModel vm)
         {
-            var newPath = await ProcessUploadedImageAsync(vehicleViewModel.ImageFile, vehicleViewModel.ImagePath);
             if (!ModelState.IsValid)
             {
-                return View(vehicleViewModel);
+                await LoadSelectListsAsync(vm.BrandId, vm.VehicleModelId, vm.TrimId, vm.StatusId);
+                return View(vm);
             }
 
-            if (ModelState.IsValid)
+            vm.ImagePath = await ProcessUploadedImageAsync(vm.ImageFile);
+            var vehicle = MapViewModelToEntity(vm);
+
+            vehicle.CalculateSalePrice(); // Calculer le prix de vente basé sur les réparations et la marge bénéficiaire
+            await _vehicleRepository.AddVehicleAsync(vehicle);
+            return RedirectToAction(nameof(Index));
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(VehicleViewModel vm)
+        {
+            Console.WriteLine($"DEBUG: VehicleId reçu = {vm.VehicleId}");
+
+            if (!ModelState.IsValid)
             {
-                vehicleViewModel.ImagePath = newPath;
-                await _vehicleService.UpdateVehicleAsync(vehicleViewModel);
-                return RedirectToAction("Index");
+                await LoadSelectListsAsync(vm.BrandId, vm.VehicleModelId, vm.TrimId, vm.StatusId);
+                return View(vm);
             }
-            return View(vehicleViewModel);
+
+            vm.ImagePath = await ProcessUploadedImageAsync(vm.ImageFile, vm.ImagePath);
+            var vehicle = MapViewModelToEntity(vm);
+
+            vehicle.CalculateSalePrice(); // Calculer le prix de vente basé sur les réparations et la marge bénéficiaire
+            await _vehicleRepository.UpdateVehicleAsync(vehicle);
+            return RedirectToAction(nameof(Index));
         }
 
         private async Task<string?> ProcessUploadedImageAsync(IFormFile? imageFile, string? oldImagePath = null)
         {
             if (imageFile == null)
+            {
+                if (string.IsNullOrEmpty(oldImagePath))
+                {
+                    return "/images/vehicles/default.png";
+                }
                 return oldImagePath; // Aucun nouveau fichier : on garde l'ancien
+            }
 
             var allowedTypes = new[] { "image/jpeg", "image/png" };
             if (!allowedTypes.Contains(imageFile.ContentType))
@@ -120,7 +200,7 @@ namespace P5CreateFirstAppDotNet.Controllers
             }
 
             // Supprimer l'ancien fichier (optionnel)
-            if (!string.IsNullOrEmpty(oldImagePath))
+            if (!string.IsNullOrEmpty(oldImagePath) && !oldImagePath.Contains("default.png"))
             {
                 var oldImagePhysicalPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", oldImagePath.TrimStart('/'));
                 if (System.IO.File.Exists(oldImagePhysicalPath))
@@ -137,8 +217,13 @@ namespace P5CreateFirstAppDotNet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            await _vehicleService.DeleteVehicleAsync(id);
-            return RedirectToAction("Index");
+            var vehicle = await _vehicleRepository.GetVehicleByIdAsync(id);
+            if (vehicle == null)
+            {
+                return NotFound();
+            }
+            await _vehicleRepository.DeleteVehicleAsync(id);
+            return View("DeleteConfirmation", vehicle);
         }
     }
 }

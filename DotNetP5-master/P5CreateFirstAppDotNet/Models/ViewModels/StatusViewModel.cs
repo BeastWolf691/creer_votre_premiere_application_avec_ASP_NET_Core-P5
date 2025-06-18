@@ -5,7 +5,6 @@ namespace P5CreateFirstAppDotNet.Models.ViewModels
 {
     public class StatusViewModel
     {
-        [BindNever]
         public int StatusId { get; set; }
 
         [Required(ErrorMessage = "Le nom de la marque est requis.")]
