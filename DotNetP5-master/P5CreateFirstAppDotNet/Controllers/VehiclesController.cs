@@ -342,10 +342,15 @@ namespace P5CreateFirstAppDotNet.Controllers
         {
             viewModel ??= new VehicleViewModel();
 
-            viewModel.VehicleBrands = new SelectList(await _vehicleBrandService.GetAllVehicleBrandsAsync(), "Id", "Brand", viewModel.VehicleBrandId);
-            viewModel.VehicleModels = new SelectList(await _vehicleModelService.GetAllVehicleModelsAsync(), "Id", "Model", viewModel.VehicleModelId);
-            viewModel.VehicleTrims = new SelectList(await _vehicleTrimService.GetAllVehicleTrimsAsync(), "Id", "TrimLabel", viewModel.VehicleTrimId);
-            viewModel.YearsOfProduction = new SelectList(await _yearOfProductionService.GetAllYearsOfProductionAsync(), "Id", "Year", viewModel.YearOfProductionId);
+            var brands = await _vehicleBrandService.GetAllVehicleBrandsAsync();
+            var models = await _vehicleModelService.GetAllVehicleModelsAsync();
+            var trims = await _vehicleTrimService.GetAllVehicleTrimsAsync();
+            var years = await _yearOfProductionService.GetAllYearsOfProductionAsync();
+
+            viewModel.VehicleBrands = new SelectList(brands, "Id", "Brand", viewModel.VehicleBrandId);
+            viewModel.VehicleModels = new SelectList(models, "Id", "Model", viewModel.VehicleModelId);
+            viewModel.VehicleTrims = new SelectList(trims, "Id", "TrimLabel", viewModel.VehicleTrimId);
+            viewModel.YearsOfProduction = new SelectList(years, "Id", "Year", viewModel.YearOfProductionId);
 
             return viewModel;
         }

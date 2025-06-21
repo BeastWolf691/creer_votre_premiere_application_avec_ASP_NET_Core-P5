@@ -132,6 +132,7 @@ namespace P5CreateFirstAppDotNet.Models.Services
                 VehicleModelId = vehicle.VehicleModel.Id,
                 VehicleTrimId = vehicle.VehicleTrim?.Id,
                 YearOfProduction = vehicle.YearOfProduction.Year,
+                YearOfProductionId = vehicle.YearOfProduction.Id,
                 Status = vehicle.Status,
                 BrandName = vehicleBrand?.Brand ?? "Marque inconnue",
                 ModelName = vehicleModel?.Model ?? "Modele inconnu",
