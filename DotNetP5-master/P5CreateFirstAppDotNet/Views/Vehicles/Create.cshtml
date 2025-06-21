@@ -6,54 +6,58 @@
 
 <div class="container form-container">
     <h1 class="text-center my-5">Ajouter une voiture</h1>
-    <p class="text-center text-muted">tous les champs sont obligatoires</p>
+    <p class="text-center text-muted" id="requiredNote">Tous les champs sont obligatoires</p>
 
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <form asp-action="Create" method="post" enctype="multipart/form-data">
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <form asp-action="Create" method="post" enctype="multipart/form-data" aria-describedby="formErrors" novalidate>
+                <!-- Validation Summary -->
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3" id="formErrors" role="alert" aria-live="assertive"></div>
 
                 <div class="form-group mb-3">
-                    <label asp-for="Label" class="form-label">Nom de la voiture</label>
-                    <input asp-for="Label" class="form-control" />
-                    <span asp-validation-for="Label" class="text-danger"></span>
+                    <label asp-for="Label" class="form-label">Nom de la voiture <span aria-hidden="true" class="text-danger">*</span></label>
+                    <input asp-for="Label" class="form-control" aria-required="true" aria-describedby="LabelError" />
+                    <span asp-validation-for="Label" class="text-danger" id="LabelError" role="alert"></span>
                 </div>
 
                 <div class="form-group mb-3">
-                    <label asp-for="VIN" class="form-label">Numéro VIN</label>
-                    <input asp-for="VIN" class="form-control" />
-                    <span asp-validation-for="VIN" class="text-danger"></span>
+                    <label asp-for="VIN" class="form-label">Numéro VIN <span aria-hidden="true" class="text-danger">*</span></label>
+                    <input asp-for="VIN" class="form-control" aria-required="true" aria-describedby="VINError" />
+                    <span asp-validation-for="VIN" class="text-danger" id="VINError" role="alert"></span>
                 </div>
 
                 <div class="form-group mb-3">
-                    <label asp-for="Description" class="form-label">Description</label>
-                    <textarea asp-for="Description" class="form-control"></textarea>
-                    <span asp-validation-for="Description" class="text-danger"></span>
+                    <label asp-for="Description" class="form-label">Description <span aria-hidden="true" class="text-danger">*</span></label>
+                    <textarea asp-for="Description" class="form-control" aria-required="true" aria-describedby="DescriptionError"></textarea>
+                    <span asp-validation-for="Description" class="text-danger" id="DescriptionError" role="alert"></span>
                 </div>
 
                 <div class="form-group mb-3">
-                    <label asp-for="YearOfProductionId" class="form-label">Année de production de la voiture</label>
-                    <select asp-for="YearOfProductionId" class="form-select" asp-items="Model.YearsOfProduction"></select>
+                    <label asp-for="YearOfProductionId" class="form-label">Année de production de la voiture <span aria-hidden="true" class="text-danger">*</span></label>
+                    <select asp-for="YearOfProductionId" class="form-select" asp-items="Model.YearsOfProduction" aria-required="true" aria-describedby="YearOfProductionIdError"></select>
+                    <span asp-validation-for="YearOfProductionId" class="text-danger" id="YearOfProductionIdError" role="alert"></span>
                 </div>
 
                 <div class="form-group mb-3">
-                    <label asp-for="VehicleBrandId" class="form-label">Marque de la voiture</label>
-                    <select asp-for="VehicleBrandId" class="form-select" asp-items="Model.VehicleBrands" id="CarBrandId"></select>
+                    <label asp-for="VehicleBrandId" class="form-label">Marque de la voiture <span aria-hidden="true" class="text-danger">*</span></label>
+                    <select asp-for="VehicleBrandId" class="form-select" asp-items="Model.VehicleBrands" id="CarBrandId" aria-required="true" aria-describedby="VehicleBrandIdError"></select>
+                    <span asp-validation-for="VehicleBrandId" class="text-danger" id="VehicleBrandIdError" role="alert"></span>
                 </div>
 
-                <button type="button" id="addBrandBtn" class="btn btn-custom">Ajouter une nouvelle marque</button>
+                <button type="button" id="addBrandBtn" class="btn btn-custom" aria-haspopup="dialog" aria-controls="addBrandModal">Ajouter une nouvelle marque</button>
 
-                <div class="modal fade" id="addBrandModal" tabindex="-1" aria-labelledby="addBrandModalLabel" aria-hidden="true">
+                <!-- Modal Ajout Marque -->
+                <div class="modal fade" id="addBrandModal" tabindex="-1" aria-labelledby="addBrandModalLabel" aria-hidden="true" role="dialog" aria-modal="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="addBrandModalLabel">Ajouter une nouvelle marque</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                             </div>
                             <div class="modal-body">
                                 <div class="form-group">
-                                    <label for="newBrandName">Nom de la nouvelle marque</label>
-                                    <input type="text" class="form-control" id="newBrandName" placeholder="Entrez le nom de la marque">
+                                    <label for="newBrandName">Nom de la nouvelle marque <span aria-hidden="true" class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="newBrandName" placeholder="Entrez le nom de la marque" aria-required="true" />
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -65,24 +69,25 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <label asp-for="VehicleModelId" class="form-label">Modèle de la voiture</label>
-                    <select asp-for="VehicleModelId" class="form-select" asp-items="Model.VehicleModels" id="VehicleModelId"></select>
-                    <span asp-validation-for="VehicleModelId" class="text-danger"></span>
+                    <label asp-for="VehicleModelId" class="form-label">Modèle de la voiture <span aria-hidden="true" class="text-danger">*</span></label>
+                    <select asp-for="VehicleModelId" class="form-select" asp-items="Model.VehicleModels" id="VehicleModelId" aria-required="true" aria-describedby="VehicleModelIdError"></select>
+                    <span asp-validation-for="VehicleModelId" class="text-danger" id="VehicleModelIdError" role="alert"></span>
                 </div>
 
-                <button type="button" id="addModelBtn" class="btn btn-custom">Ajouter un modèle</button>
+                <button type="button" id="addModelBtn" class="btn btn-custom" aria-haspopup="dialog" aria-controls="addModelModal">Ajouter un modèle</button>
 
-                <div class="modal fade" id="addModelModal" tabindex="-1" aria-labelledby="addModelModalLabel" aria-hidden="true">
+                <!-- Modal Ajout Modèle -->
+                <div class="modal fade" id="addModelModal" tabindex="-1" aria-labelledby="addModelModalLabel" aria-hidden="true" role="dialog" aria-modal="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="addModelModalLabel">Ajouter un nouveau modèle</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                             </div>
                             <div class="modal-body">
                                 <div class="form-group">
-                                    <label for="newModelName">Nom du modèle</label>
-                                    <input type="text" id="newModelName" class="form-control" placeholder="Nom du modèle" />
+                                    <label for="newModelName">Nom du modèle <span aria-hidden="true" class="text-danger">*</span></label>
+                                    <input type="text" id="newModelName" class="form-control" placeholder="Nom du modèle" aria-required="true" />
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -94,26 +99,27 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <label asp-for="VehicleTrimId" class="form-label">Finition de la voiture</label>
-                    <select asp-for="VehicleTrimId" class="form-select" asp-items="Model.VehicleTrims"></select>
+                    <label asp-for="VehicleTrimId" class="form-label">Finition de la voiture <span aria-hidden="true" class="text-danger">*</span></label>
+                    <select asp-for="VehicleTrimId" class="form-select" asp-items="Model.VehicleTrims" aria-required="true" aria-describedby="VehicleTrimIdError"></select>
+                    <span asp-validation-for="VehicleTrimId" class="text-danger" id="VehicleTrimIdError" role="alert"></span>
                 </div>
 
                 <div class="form-group mb-3">
-                    <label asp-for="PurchaseDate" class="form-label">Date d'achat</label>
-                    <input asp-for="PurchaseDate" class="form-control" type="date" />
-                    <span asp-validation-for="PurchaseDate" class="text-danger"></span>
+                    <label asp-for="PurchaseDate" class="form-label">Date d'achat <span aria-hidden="true" class="text-danger">*</span></label>
+                    <input asp-for="PurchaseDate" class="form-control" type="date" aria-required="true" aria-describedby="PurchaseDateError" />
+                    <span asp-validation-for="PurchaseDate" class="text-danger" id="PurchaseDateError" role="alert"></span>
                 </div>
 
                 <div class="form-group mb-3">
-                    <label asp-for="PurchasePrice" class="form-label">Prix d'achat</label>
-                    <input asp-for="PurchasePrice" class="form-control prix" />
-                    <span asp-validation-for="PurchasePrice" class="text-danger"></span>
+                    <label asp-for="PurchasePrice" class="form-label">Prix d'achat <span aria-hidden="true" class="text-danger">*</span></label>
+                    <input asp-for="PurchasePrice" class="form-control prix" aria-required="true" aria-describedby="PurchasePriceError" />
+                    <span asp-validation-for="PurchasePrice" class="text-danger" id="PurchasePriceError" role="alert"></span>
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="MediaFiles" class="form-label">Ajoutez une image</label>
-                    <input type="file" asp-for="MediaFiles" multiple class="form-control" />
-                    <span asp-validation-for="MediaFiles" class="text-danger"></span>
+                    <label for="MediaFiles" class="form-label">Ajoutez une image <span aria-hidden="true" class="text-danger">*</span></label>
+                    <input type="file" asp-for="MediaFiles" multiple class="form-control" aria-describedby="MediaFilesError" />
+                    <span asp-validation-for="MediaFiles" class="text-danger" id="MediaFilesError" role="alert"></span>
                 </div>
 
                 <div class="text-center">
@@ -127,4 +133,25 @@
 @section Scripts {
     <partial name="_scripts" />
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Gestion du focus à l'ouverture des modals Bootstrap 5 (accessibilité)
+        var addBrandModal = document.getElementById('addBrandModal');
+        var addBrandBtn = document.getElementById('addBrandBtn');
+        addBrandModal.addEventListener('shown.bs.modal', function () {
+            document.getElementById('newBrandName').focus();
+        });
+        addBrandModal.addEventListener('hidden.bs.modal', function () {
+            addBrandBtn.focus();
+        });
+
+        var addModelModal = document.getElementById('addModelModal');
+        var addModelBtn = document.getElementById('addModelBtn');
+        addModelModal.addEventListener('shown.bs.modal', function () {
+            document.getElementById('newModelName').focus();
+        });
+        addModelModal.addEventListener('hidden.bs.modal', function () {
+            addModelBtn.focus();
+        });
+    </script>
 }

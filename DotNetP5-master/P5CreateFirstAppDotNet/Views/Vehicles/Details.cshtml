@@ -24,7 +24,7 @@
 
     <div class="row align-items-start">
         <div class="col-md-5 text-center mb-3">
-            <img src="@Model.MediaPath" alt="Image du véhicule" class="img-fluid rounded border"
+            <img src="@Model.MediaPath" alt="Image du véhicule @Model.MediaPath" class="img-fluid rounded border"
                  style="max-height: 400px;" />
         </div>
 
@@ -33,10 +33,12 @@
             {
                 <p class="mb-1">Vous avez publié cette annonce, vous pouvez :</p>
                 <div class="d-flex gap-3 mb-4">
-                    <a asp-action="Edit" asp-route-id="@Model.Id" style="text-decoration: underline; background: none; border: none; color: #6c757d;">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" style="text-decoration: underline; background: none; border: none; color: #6c757d"
+                        aria-label="Modifier le véhicule">
                         Modifier
                     </a>
-                    <a asp-action="Delete" asp-route-id="@Model.Id" style="text-decoration: underline; background: none; border: none; color: red;">
+                    <a asp-action="Delete" asp-route-id="@Model.Id" style="text-decoration: underline; background: none; border: none; color: red;"
+                       aria-label="Supprimer le véhicule">
                         Supprimer
                     </a>
                 </div>
@@ -48,7 +50,7 @@
             <p><strong>Année :</strong> @Model.YearOfProduction</p>
             @if (Model.Status == VehicleStatus.Vendu)
             {
-                <div>
+                <div aria-live="polite">
                     Vendue le @(Model.SaleDate?.ToShortDateString() ?? "date inconnue") pour @(Model.SalePrice?.ToString("N0") ?? "prix inconnu") €
                 </div>
             }
