@@ -1,0 +1,11 @@
+﻿@model P5CreateFirstAppDotNet.Models.ViewModels.VehicleViewModel
+@{
+    ViewData["Title"] = "Véhicule supprimé";
+}
+
+<div class="container text-center mt-5" role="status" aria-live="polite">
+    <h2 class="text-muted">@Model.YearOfProduction @Model.BrandName @Model.ModelName @Model.TrimName</h2>
+    <p>a bien été supprimé.</p>
+    <a href="@Url.Action("Index", "Vehicles")" class="btn btn-custom">Retour à l'accueil</a>
+</div>
+

@@ -8,48 +8,33 @@ namespace P5CreateFirstAppDotNet.Models.Entities
 
     public class Vehicle
     {
-        // Propriétés de l'entité Vehicle
-        public int VehicleId { get; set; }
-        public string? VinCode { get; set; }
-        public int Year { get; set; }
-        public DateTime PurchaseDate { get; set; }
-        public double PurchasePrice { get; set; }
-        public string? Description { get; set; }
-        public DateTime? AvailableForSaleDate { get; set; }
-        public double? SalePrice { get; set; }
-        public DateTime? SaleDate { get; set; }
-        public string? ImagePath { get; set; }
+        public int Id { get; set; }
+        public string Label { get; set; } = null!;
+        public string VIN { get; set; } = null!;
+        public string Description { get; set; } = null!;
+        public int YearOfProductionId { get; set; }
+        public int VehicleBrandId { get; set; }
+        public int VehicleModelId { get; set; }
+        public int? VehicleTrimId { get; set; }
+        public VehicleStatus Status { get; set; }
 
-        // Statut du véhicule
-        public int? StatusId { get; set; }
-        public Status? Status { get; set; }
+        public virtual YearOfProduction YearOfProduction { get; set; } = null!;
+        public virtual VehicleBrand VehicleBrand { get; set; } = null!;
+        public virtual VehicleModel VehicleModel { get; set; } = null!;
+        public virtual VehicleTrim? VehicleTrim { get; set; }
+        public virtual ICollection<VehicleMedia>? VehicleMedia { get; set; }
 
-        // Marge bénéficiaire calculée
-        private const double DefaultMargin = 500;
+        public virtual ICollection<Purchase> Purchases { get; set; } = new List<Purchase>();
+        public virtual ICollection<Sale>? Sales { get; set; }
+        public virtual ICollection<Repair>? Repairs { get; set; }
 
-        // Coût total des réparations
-        public double TotalRepairCost => VehicleRepairs.Sum(vr => vr.Repair.RepairCost);
-
-        // Clé étrangère vers Brand (marque)
-        public int? BrandId { get; set; }
-        public Brand? Brand { get; set; }
-
-        // Clé étrangère vers Model
-        public int? VehicleModelId { get; set; }
-        public VehicleModel? VehicleModel { get; set; }
-
-        // Clé étrangère vers Trim (finition)
-        public int? TrimId { get; set; }
-        public Trim? Trim { get; set; }
-
-        // Un véhicule peut subir plusieurs réparations
-        public ICollection<VehicleRepair> VehicleRepairs { get; set; } = new List<VehicleRepair>();
-
-        public void CalculateSalePrice()
-        {
-            // Si le prix de vente n'est pas défini, on le calcule
-            SalePrice = PurchasePrice + TotalRepairCost + DefaultMargin;
-
-        }
     }
+
+    public enum VehicleStatus
+    {
+        Maintenance = 0,
+        Disponible = 1,
+        Vendu = 2
+    }
+
 }

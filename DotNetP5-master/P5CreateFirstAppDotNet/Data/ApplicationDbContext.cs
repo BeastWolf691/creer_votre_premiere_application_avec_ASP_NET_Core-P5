@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using P5CreateFirstAppDotNet.Data.SeedData;
 using P5CreateFirstAppDotNet.Models.Entities;
 
 namespace P5CreateFirstAppDotNet.Data
@@ -11,92 +12,83 @@ namespace P5CreateFirstAppDotNet.Data
         {
         }
 
-        public DbSet<Brand> Brands { get; set; } = null!;
+        public DbSet<VehicleBrand> VehicleBrands { get; set; } = null!;
         public DbSet<VehicleModel> VehicleModels { get; set; } = null!;
-        public DbSet<Trim> Trims { get; set; } = null!;
+        public DbSet<VehicleTrim> VehicleTrims { get; set; } = null!;
         public DbSet<Vehicle> Vehicles { get; set; } = null!;
         public DbSet<Repair> Repairs { get; set; } = null!;
-        public DbSet<VehicleRepair> VehicleRepairs { get; set; } = null!;
-        public DbSet<Status> Statuses { get; set; } = null!;
+        public DbSet<VehicleModelVehicleTrim> VehicleModelVehicleTrims { get; set; } = null!;
+        public DbSet<Media> Medias { get; set; } = null!;
+        public DbSet<VehicleMedia> VehicleMedias { get; set; } = null!;
+        public DbSet<TypeOfMedia> TypeOfMedias { get; set; } = null!;
+        public DbSet<Purchase> Purchases { get; set; } = null!;
+        public DbSet<Sale> Sales { get; set; } = null!;
+        public DbSet<YearOfProduction> YearOfProductions { get; set; } = null!;
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Vehicle>()
+                .HasOne(v => v.VehicleModel)
+                .WithMany(vm => vm.Vehicles)
+                .HasForeignKey(v => v.VehicleModelId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Vehicle>(entity =>
-            {
-                entity.HasOne(v => v.Status)
-                      .WithMany(s => s.Vehicles)
-                      .HasForeignKey(v => v.StatusId)
-                      .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<VehicleModel>()
+                .HasOne(vm => vm.VehicleBrand)
+                .WithMany(vb => vb.VehicleModels)
+                .HasForeignKey(vm => vm.VehicleBrandId);
 
+            modelBuilder.Entity<VehicleModelVehicleTrim>()
+                .HasOne(vmvt => vmvt.VehicleTrim)
+                .WithMany(vt => vt.VehicleModelVehicleTrims)
+                .HasForeignKey(vmvt => vmvt.VehicleTrimId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne(v => v.VehicleModel)
-                      .WithMany(vm => vm.Vehicles)
-                      .HasForeignKey(v => v.VehicleModelId)
-                      .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<VehicleModelVehicleTrim>()
+                .HasKey(vmvt => new { vmvt.VehicleModelId, vmvt.VehicleTrimId });
 
+            modelBuilder.Entity<VehicleMedia>()
+                .HasKey(vm => new { vm.VehicleId, vm.MediaId });
 
-                entity.HasOne(v => v.Trim)
-                      .WithMany(t => t.Vehicles)
-                      .HasForeignKey(v => v.TrimId)
-                      .OnDelete(DeleteBehavior.Restrict);
-                   
+            modelBuilder.Entity<VehicleMedia>()
+                .HasOne(vm => vm.Vehicle)
+                .WithMany(v => v.VehicleMedia)
+                .HasForeignKey(vm => vm.VehicleId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-                entity.Property(v => v.SalePrice).HasPrecision(18, 2);
-                entity.Property(v => v.PurchasePrice).HasPrecision(18, 2);
-            });
+            modelBuilder.Entity<VehicleMedia>()
+                .HasOne(vm => vm.Media)
+                .WithMany(m => m.VehicleMedia)
+                .HasForeignKey(vm => vm.MediaId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Repair>(entity =>
-            {
-                entity.Property(r => r.RepairCost).HasPrecision(18, 2);
-                
-                entity.HasMany(r => r.VehicleRepairs)
-                      .WithOne(vr => vr.Repair)
-                      .HasForeignKey(vr => vr.RepairId);
-            });
+            modelBuilder.Entity<Purchase>()
+                .Property(p => p.PurchasePrice)
+                .HasPrecision(18, 2);
 
+            modelBuilder.Entity<Repair>()
+                .Property(r => r.RepairCost)
+                .HasPrecision(18, 2);
 
-            modelBuilder.Entity<Brand>(entity =>
-            {
-                entity.HasIndex(b => b.Name).IsUnique();
-            });
+            modelBuilder.Entity<Sale>()
+                .Property(s => s.SalePrice)
+                .HasPrecision(18, 2);
 
-            modelBuilder.Entity<VehicleModel>(entity =>
-            { 
-                entity.HasOne(vm => vm.Brand)
-                      .WithMany(b => b.VehicleModels)
-                      .HasForeignKey(vm => vm.BrandId)
-                      .OnDelete(DeleteBehavior.Restrict);
-            });
-
-            modelBuilder.Entity<Trim>(entity =>
-            {
-                entity.HasOne(t => t.VehicleModel)
-                      .WithMany(vm => vm.Trims)
-                      .HasForeignKey(t => t.VehicleModelId)
-                      .OnDelete(DeleteBehavior.Restrict);
-            });
-
-            modelBuilder.Entity<Status>(entity =>
-            {
-                entity.HasIndex(s => s.Name).IsUnique();
-            });
-
-
-            modelBuilder.Entity<VehicleRepair>(entity =>
-            {
-                entity.HasKey(vr => new { vr.VehicleId, vr.RepairId });
-
-                entity.HasOne(vr => vr.Vehicle)
-                      .WithMany(v => v.VehicleRepairs)
-                      .HasForeignKey(vr => vr.VehicleId);
-
-                entity.HasOne(vr => vr.Repair)
-                      .WithMany(r => r.VehicleRepairs)
-                      .HasForeignKey(vr => vr.RepairId);
-            });
-
+            YearOfProductionData.SeedData(modelBuilder);
+            TypeOfMediaData.SeedData(modelBuilder);
+            VehicleBrandData.SeedData(modelBuilder);
+            VehicleModelData.SeedData(modelBuilder);
+            VehicleModelVehicleTrimData.SeedData(modelBuilder);
+            VehicleTrimData.SeedData(modelBuilder);
+            VehicleData.SeedData(modelBuilder);
+            VehicleMediaData.SeedData(modelBuilder);
+            MediaData.SeedData(modelBuilder);
+            PurchaseData.SeedData(modelBuilder);
+            RepairData.SeedData(modelBuilder);
+            SaleData.SeedData(modelBuilder);
         }
+
     }
 }

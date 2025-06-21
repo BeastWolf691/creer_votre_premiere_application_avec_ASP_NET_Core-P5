@@ -7,59 +7,47 @@ namespace P5CreateFirstAppDotNet.Models.Services
     public class VehicleModelService : IVehicleModelService
     {
         private readonly IVehicleModelRepository _vehicleModelRepository;
+        private readonly IVehicleBrandService _vehicleBrandService;
 
-        public VehicleModelService(IVehicleModelRepository vehicleModelRepository)
+        public VehicleModelService(IVehicleModelRepository vehicleModelRepository, IVehicleBrandService vehicleBrandService)
         {
             _vehicleModelRepository = vehicleModelRepository;
+            _vehicleBrandService = vehicleBrandService;
         }
 
-        public async Task<IEnumerable<VehicleModelViewModel>> GetAllModelsAsync()
+        public async Task<IEnumerable<VehicleModel>> GetAllVehicleModelsAsync()
         {
-            var models = await _vehicleModelRepository.GetAllModelsAsync();
-            return models.Select(MapToViewModel);
+            return await _vehicleModelRepository.GetAllVehicleModelsAsync();
         }
 
-        public async Task<VehicleModelViewModel> GetModelByIdAsync(int id)
+        public async Task<VehicleModel?> GetVehicleModelByIdAsync(int modelId)
         {
-            var model = await _vehicleModelRepository.GetModelByIdAsync(id);
-            return MapToViewModel(model);
+            return await _vehicleModelRepository.GetVehicleModelByIdAsync(modelId);
         }
-
-        public async Task AddModelAsync(VehicleModelViewModel vehicleModelViewModel)
+        public async Task<VehicleModel> AddNewModelAsync(string modelName, int brandId)
         {
-            var vehicleModel = MapToEntity(vehicleModelViewModel);
-            await _vehicleModelRepository.AddModelAsync(vehicleModel);
-        }
-
-        public async Task UpdateModelAsync(VehicleModelViewModel vehicleModelViewModel)
-        {
-            var vehicleModel = MapToEntity(vehicleModelViewModel);
-            await _vehicleModelRepository.UpdateModelAsync(vehicleModel);
-        }
-
-        public async Task DeleteModelAsync(int id)
-        {
-            await _vehicleModelRepository.DeleteModelAsync(id);
-        }
-
-        public VehicleModelViewModel MapToViewModel(VehicleModel vehicleModel)
-        {
-            return new VehicleModelViewModel
+            VehicleBrand? existingBrand = await _vehicleBrandService.GetVehicleBrandByIdAsync(brandId);
+            if (existingBrand == null)
             {
-                VehicleModelId = vehicleModel.VehicleModelId,
-                Name = vehicleModel.Name,
-                BrandId = vehicleModel.BrandId,
-            };
-        }
+                throw new InvalidOperationException("La marque spécifiée est introuvable.");
+            }
 
-        private VehicleModel MapToEntity(VehicleModelViewModel vehicleModelViewModel)
-        {
-            return new VehicleModel
+            VehicleModel? existingModel = await _vehicleModelRepository.GetVehicleModelByNameAsync(modelName);
+            if (existingModel != null)
             {
-                VehicleModelId = vehicleModelViewModel.VehicleModelId,
-                Name = vehicleModelViewModel.Name,
-                BrandId = vehicleModelViewModel.BrandId,
+                throw new InvalidOperationException("Ce modèle existe déjà.");
+            }
+
+            VehicleModel newModel = new VehicleModel
+            {
+                Model = modelName,
+                VehicleBrandId = brandId,
+                VehicleBrand = existingBrand
             };
+
+            await _vehicleModelRepository.AddVehicleModelAsync(newModel);
+
+            return newModel;
         }
     }
 }

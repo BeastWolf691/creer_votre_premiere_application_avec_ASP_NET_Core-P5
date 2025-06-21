@@ -10,108 +10,210 @@ namespace P5CreateFirstAppDotNet.Models.Services
     public class VehicleService : IVehicleService
     {
         private readonly IVehicleRepository _vehicleRepository;
-        private readonly IStringLocalizer<VehicleService> _localizer;
-        public VehicleService(IVehicleRepository vehicleRepository, IStringLocalizer<VehicleService> localizer)
+        private readonly IVehicleModelRepository _vehicleModelRepository;
+        private readonly IVehicleBrandRepository _vehicleBrandRepository;
+        private readonly IVehicleTrimRepository _vehicleTrimRepository;
+        private readonly IMediaRepository _mediaRepository;
+        private readonly ISaleService _saleService;
+        private readonly IPurchaseService _purchaseService;
+        private readonly IRepairService _repairService;
+
+
+        public VehicleService(
+            IVehicleRepository vehicleRepository,
+            IVehicleModelRepository vehicleModelRepository,
+            IVehicleBrandRepository vehicleBrandRepository,
+            IVehicleTrimRepository vehicleTrimRepository,
+            IMediaRepository mediaRepository,
+            ISaleService saleService,
+            IPurchaseService purchaseService,
+            IRepairService repairService)
         {
             _vehicleRepository = vehicleRepository;
-            _localizer = localizer;
+            _vehicleModelRepository = vehicleModelRepository;
+            _vehicleBrandRepository = vehicleBrandRepository;
+            _vehicleTrimRepository = vehicleTrimRepository;
+            _mediaRepository = mediaRepository;
+            _saleService = saleService;
+            _purchaseService = purchaseService;
+            _repairService = repairService;
         }
-        public Vehicle MapViewModelToEntity(VehicleViewModel vm)
+
+        public async Task<IEnumerable<VehicleViewModel>> GetAllVehiclesAsync()
         {
-            return new Vehicle
+            IEnumerable<Vehicle> vehicles = await _vehicleRepository.GetAllVehiclesAsync() ?? new List<Vehicle>();
+
+            var vehicleViewModels = new List<VehicleViewModel>();
+
+            foreach (var vehicle in vehicles)
             {
-                VehicleId = vm.VehicleId,
-                VinCode = vm.VinCode,
-                Year = vm.Year,
-                PurchaseDate = vm.PurchaseDate,
-                PurchasePrice = double.TryParse(vm.PurchasePrice, NumberStyles.Any, CultureInfo.InvariantCulture, out var p) ? p : 0,
-                Description = vm.Description,
-                AvailableForSaleDate = vm.AvailableForSaleDate,
-                SalePrice = double.TryParse(vm.SalePrice, NumberStyles.Any, CultureInfo.InvariantCulture, out var s) ? s : 0,
-                ImagePath = vm.ImagePath,
-                VehicleModelId = vm.VehicleModelId,
-                TrimId = vm.TrimId,
-                StatusId = vm.StatusId
-            };
-        }
 
-        public VehicleViewModel MapVehicleToViewModel(Vehicle vehicle)
-        {
-            return new VehicleViewModel
-            {
-                VehicleId = vehicle.VehicleId,
-                VinCode = vehicle.VinCode,
-                Year = vehicle.Year,
-                PurchaseDate = vehicle.PurchaseDate,
-                Description = vehicle.Description,
-                PurchasePrice = vehicle.PurchasePrice.ToString("0.00", CultureInfo.InvariantCulture),
-                AvailableForSaleDate = vehicle.AvailableForSaleDate,
-                SalePrice = vehicle.SalePrice?.ToString("F2"),
-                SaleDate = vehicle.SaleDate,
-                StatusId = vehicle.StatusId ?? 0,
-                VehicleModelId = vehicle.VehicleModelId ?? 0,
-                TrimId = vehicle.TrimId ?? 0,
-                ImagePath = vehicle.ImagePath,
-                BrandId = vehicle.VehicleModel?.Brand?.BrandId ?? 0,
-                BrandName = vehicle.VehicleModel?.Brand?.Name,
-                StatusName = vehicle.Status?.Name,
-                VehicleModelName = vehicle.VehicleModel?.Name,
-                TrimName = vehicle.Trim?.Name,
-            };
-        }
+                var vehicleBrand = await _vehicleBrandRepository.GetVehicleBrandByIdAsync(vehicle.VehicleBrandId);
+                var vehicleModel = await _vehicleModelRepository.GetVehicleModelByIdAsync(vehicle.VehicleModelId);
 
-        public async Task<List<VehicleViewModel>?> GetAllVehicleViewModelsAsync()
-        {
-            var vehicleEntities = await _vehicleRepository.GetAllVehicleAsync();
-            return vehicleEntities?.Select(MapVehicleToViewModel).ToList();
-        }
-
-        public async Task<VehicleViewModel?> GetVehicleViewModelAsync(int id)
-        {
-            var vehicle = await _vehicleRepository.GetVehicleByIdAsync(id);
-            return vehicle != null ? MapVehicleToViewModel(vehicle) : null;
-        }
-
-        public async Task AddVehicleAsync(VehicleViewModel vehicleViewModel)
-        {
-            var vehicle = MapViewModelToEntity(vehicleViewModel);
-            await _vehicleRepository.AddVehicleAsync(vehicle);
-        }
-
-        public async Task AssignRepairsToVehicleAsync(int vehicleId, List<int> repairIds)
-        {
-            var vehicle = await _vehicleRepository.GetVehicleByIdAsync(vehicleId);
-            if (vehicle == null)
-                throw new ArgumentException("Véhicule non trouvé.");
-
-            foreach (var repairId in repairIds)
-            {
-                bool alreadyAssigned = vehicle.VehicleRepairs.Any(vr => vr.RepairId == repairId);
-                if (!alreadyAssigned)
+                VehicleTrim? vehicleTrim = null;
+                if (vehicle.VehicleTrimId.HasValue)
                 {
-                    vehicle.VehicleRepairs.Add(new VehicleRepair
-                    {
-                        VehicleId = vehicleId,
-                        RepairId = repairId
-                    });
+                    vehicleTrim = await _vehicleTrimRepository.GetVehicleTrimByIdAsync(vehicle.VehicleTrimId.Value);
                 }
+
+                var media = await GetVehicleMediaAsync(vehicle.Id);
+                var firstMedia = media?.FirstOrDefault();
+
+                Sale? sale = await _saleService.GetSaleByVehicleIdAsync(vehicle.Id);
+
+                var vehicleViewModel = new VehicleViewModel
+                {
+                    Id = vehicle.Id,
+                    Label = vehicle.Label,
+                    VIN = vehicle.VIN,
+                    Description = vehicle.Description,
+                    VehicleBrandId = vehicle.VehicleBrand.Id,
+                    VehicleModelId = vehicle.VehicleModel.Id,
+                    VehicleTrimId = vehicle.VehicleTrim?.Id,
+                    YearOfProduction = vehicle.YearOfProduction.Year,
+                    Status = vehicle.Status,
+                    BrandName = vehicleBrand?.Brand ?? "Marque inconnue",
+                    ModelName = vehicleModel?.Model ?? "Modele inconnu",
+                    TrimName = vehicleTrim?.TrimLabel ?? "Pas de finition",
+                    MediaPath = firstMedia?.Path,
+                    MediaLabel = firstMedia?.Label,
+                    SaleDate = sale?.SaleDate,
+                    SalePrice = sale?.SalePrice,
+                    VehicleMedia = media?.Select(m => new VehicleMedia
+                    {
+                        MediaId = m.Id,
+                        Media = m,
+                        VehicleId = vehicle.Id,
+                        Vehicle = vehicle
+                    }).ToList()
+                };
+
+                vehicleViewModels.Add(vehicleViewModel);
+
             }
 
-            // Recalcule le prix de vente
-            vehicle.CalculateSalePrice();
+            return vehicleViewModels;
+        }
+
+        public async Task<VehicleViewModel> GetVehicleByIdAsync(int vehicleId)
+        {
+            Vehicle? vehicle = await _vehicleRepository.GetVehicleByIdAsync(vehicleId);
+
+            if (vehicle?.VehicleBrandId == null)
+                throw new Exception("VehicleBrandId est null");
+
+            if (vehicle?.VehicleModelId == null)
+                throw new Exception("VehicleModelId est null");
+
+            var vehicleBrand = await _vehicleBrandRepository.GetVehicleBrandByIdAsync(vehicle.VehicleBrandId);
+            var vehicleModel = await _vehicleModelRepository.GetVehicleModelByIdAsync(vehicle.VehicleModelId);
+
+            VehicleTrim? vehicleTrim = null;
+            if (vehicle.VehicleTrimId.HasValue)
+            {
+                vehicleTrim = await _vehicleTrimRepository.GetVehicleTrimByIdAsync(vehicle.VehicleTrimId.Value);
+            }
+
+            Sale? sale = await _saleService.GetSaleByVehicleIdAsync(vehicle.Id);
+            Purchase? purchase = await _purchaseService.GetPurchaseByVehicleIdAsync(vehicle.Id);
+            Repair? repair = await _repairService.GetRepairByVehicleIdAsync(vehicle.Id);
+
+            var media = await GetVehicleMediaAsync(vehicle.Id);
+            var firstMedia = media?.FirstOrDefault();
+
+            return new VehicleViewModel
+            {
+                Id = vehicle.Id,
+                Label = vehicle.Label,
+                VIN = vehicle.VIN,
+                Description = vehicle.Description,
+                VehicleBrandId = vehicle.VehicleBrand.Id,
+                VehicleModelId = vehicle.VehicleModel.Id,
+                VehicleTrimId = vehicle.VehicleTrim?.Id,
+                YearOfProduction = vehicle.YearOfProduction.Year,
+                Status = vehicle.Status,
+                BrandName = vehicleBrand?.Brand ?? "Marque inconnue",
+                ModelName = vehicleModel?.Model ?? "Modele inconnu",
+                TrimName = vehicleTrim?.TrimLabel ?? "Pas de finition",
+                MediaPath = firstMedia?.Path,
+                MediaLabel = firstMedia?.Label,
+                SaleDate = sale?.SaleDate,
+                SalePrice = sale?.SalePrice,
+                PurchaseDate = purchase?.PurchaseDate,
+                PurchasePrice = purchase?.PurchasePrice,
+                RepairDate = repair?.RepairDate,
+                RepairCost = repair?.RepairCost,
+                RepairDescription = repair?.Description
+            };
+        }
+        public async Task<Vehicle> AddVehicleAsync(VehicleViewModel vehicleViewModel)
+        {
+            VehicleModel? carModel = await _vehicleModelRepository.GetVehicleModelByIdAsync(vehicleViewModel.VehicleModelId);
+
+            Vehicle vehicle = new Vehicle
+            {
+                Label = vehicleViewModel.Label,
+                VIN = vehicleViewModel.VIN,
+                Description = vehicleViewModel.Description,
+                YearOfProductionId = vehicleViewModel.YearOfProductionId,
+                VehicleBrandId = vehicleViewModel.VehicleBrandId,
+                VehicleModelId = vehicleViewModel.VehicleModelId,
+                VehicleTrimId = vehicleViewModel.VehicleTrimId,
+                Status = VehicleStatus.Maintenance
+            };
+
+            await _vehicleRepository.AddVehicleAsync(vehicle);
+            return vehicle;
+        }
+        public async Task<IEnumerable<VehicleModel>> GetVehicleModelByBrandIdAsync(int brandId)
+        {
+            return await _vehicleModelRepository.GetVehicleModelsByBrandIdAsync(brandId);
+        }
+
+        public async Task UpdateVehicleAsync(int vehicleId, VehicleViewModel vehicleViewModel)
+        {
+            Vehicle? vehicle = await _vehicleRepository.GetVehicleByIdAsync(vehicleId);
+            if (!await (ValidateVehicleModelWithBrandAsync(vehicleViewModel.VehicleModelId, vehicleViewModel.VehicleBrandId)))
+            {
+                throw new Exception("Le modèle sélectionné n'appartient pas à la marque choisie.");
+            }
+            if (vehicle == null)
+            {
+                throw new Exception($"Véhicule avec l'ID {vehicleId} non trouvé.");
+            }
+
+            vehicle.Label = vehicleViewModel.Label;
+            vehicle.VIN = vehicleViewModel.VIN;
+            vehicle.Description = vehicleViewModel.Description;
+            vehicle.YearOfProductionId = vehicleViewModel.YearOfProductionId;
+            vehicle.VehicleBrandId = vehicleViewModel.VehicleBrandId;
+            vehicle.VehicleModelId = vehicleViewModel.VehicleModelId;
+            vehicle.VehicleTrimId = vehicleViewModel.VehicleTrimId;
+            vehicle.Status = vehicleViewModel.Status;
 
             await _vehicleRepository.UpdateVehicleAsync(vehicle);
         }
 
-        public async Task UpdateVehicleAsync(VehicleViewModel vehicleViewModel)
+        public async Task DeleteVehicleAsync(int vehicleId)
         {
-            var vehicle = MapViewModelToEntity(vehicleViewModel);
-            await _vehicleRepository.UpdateVehicleAsync(vehicle);
+            await _vehicleRepository.DeleteVehicleAsync(vehicleId);
+        }
+        public async Task<bool> ValidateVehicleModelWithBrandAsync(int vehicleModelId, int vehicleBrandId)
+        {
+            VehicleModel vehicleModel = await _vehicleModelRepository.GetVehicleModelByIdAsync(vehicleModelId);
+            if (vehicleModel is not null && vehicleModel.VehicleBrandId == vehicleBrandId) { return true; }
+            return false;
         }
 
-        public async Task DeleteVehicleAsync(int id)
+        public async Task<IEnumerable<Media>> GetVehicleMediaAsync(int vehicleId)
         {
-            await _vehicleRepository.DeleteVehicleAsync(id);
+            return await _mediaRepository.GetMediaByVehicleAsync(vehicleId);
+        }
+
+        public async Task<bool> VehicleExistsAsync(int id)
+        {
+            return await _vehicleRepository.VehicleExistsAsync(id);
         }
     }
 }

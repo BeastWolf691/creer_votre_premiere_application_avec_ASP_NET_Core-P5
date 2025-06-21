@@ -13,35 +13,46 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
         {
             _context = context;
         }
-        public async Task<IEnumerable<VehicleModel>> GetAllModelsAsync()
+        public async Task<IEnumerable<VehicleModel>> GetAllVehicleModelsAsync()
+        {
+            return await _context.VehicleModels.ToListAsync();
+        }
+
+        public async Task<VehicleModel?> GetVehicleModelByIdAsync(int vehicleModelId)
+        {
+            return await _context.VehicleModels.FirstOrDefaultAsync(c => c.Id == vehicleModelId);
+        }
+
+        public async Task<VehicleModel?> GetVehicleModelByNameAsync(string modelName)
+        {
+            return await _context.VehicleModels.FirstOrDefaultAsync(m => m.Model == modelName);
+        }
+        public async Task<IEnumerable<VehicleModel>> GetVehicleModelsByBrandIdAsync(int brandId)
         {
             return await _context.VehicleModels
-                .Include(vm => vm.Brand)
-                .ToListAsync();
+                                 .Where(m => m.VehicleBrandId == brandId)
+                                 .ToListAsync();
         }
-        public async Task<VehicleModel> GetModelByIdAsync(int id)
+
+        public async Task AddVehicleModelAsync(VehicleModel vehicleModel)
         {
-            return await _context.VehicleModels
-                .Include(vm => vm.Brand)
-                .FirstOrDefaultAsync(vm => vm.VehicleModelId == id)
-                ?? throw new KeyNotFoundException($"Model with ID {id} not found.");
-        }
-        public async Task AddModelAsync(VehicleModel model)
-        {
-            await _context.VehicleModels.AddAsync(model);
-            await _context.SaveChangesAsync();
-        }
-        public async Task UpdateModelAsync(VehicleModel model)
-        {
-            _context.Entry(model).State = EntityState.Modified;
+            _context.VehicleModels.Add(vehicleModel);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteModelAsync(int id)
+        public async Task UpdateVehicleModelAsync(VehicleModel vehicleModel)
         {
-            var model = await GetModelByIdAsync(id);
-            _context.VehicleModels.Remove(model);
+            _context.VehicleModels.Update(vehicleModel);
             await _context.SaveChangesAsync();
+        }
+        public async Task DeleteVehicleModelAsync(int vehicleModelId)
+        {
+            VehicleModel? vehicleModel = await _context.VehicleModels.FindAsync(vehicleModelId);
+            if (vehicleModel is not null)
+            {
+                _context.VehicleModels.Remove(vehicleModel);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

@@ -1,0 +1,161 @@
+﻿<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // Fonction pour charger les modèles en fonction de la marque sélectionnée
+        function loadVehicleModels(brandId) {
+            var vehicleModelSelect = document.getElementById('VehicleModelId');
+            vehicleModelSelect.innerHTML = '';  // Vider la liste déroulante
+
+            if (brandId) {
+                fetch('/Vehicles/GetVehicleModelsByBrand?brandId=' + brandId)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length > 0) {
+                            data.forEach(function (item) {
+                                var option = new Option(item.model, item.id);
+                                vehicleModelSelect.appendChild(option);
+                            });
+                        } else {
+                            vehicleModelSelect.appendChild(new Option('-- Pas de modèle pour cette marque --', ''));
+                        }
+                    })
+                    .catch(error => console.error('Erreur:', error));
+            } else {
+                vehicleModelSelect.appendChild(new Option('-- Sélectionnez une marque --', ''));
+            }
+        }
+
+        // Charger les modèles si une marque est déjà sélectionnée
+        var selectedBrandId = document.getElementById('VehicleBrandId').value;
+        loadVehicleModels(selectedBrandId);
+
+        // Gérer le changement de marque
+        document.getElementById('VehicleBrandId').addEventListener('change', function () {
+            var brandId = this.value;
+            loadVehicleModels(brandId);
+        });
+
+        // Afficher le modal pour ajouter une marque
+        document.getElementById('addBrandBtn').addEventListener('click', function () {
+            var addBrandModal = new bootstrap.Modal(document.getElementById('addBrandModal'));
+            addBrandModal.show();
+        });
+
+        // Sauvegarder la nouvelle marque
+        document.getElementById('saveBrandBtn').addEventListener('click', function () {
+            var brandName = document.getElementById('newBrandName').value.trim();
+
+            if (brandName) {
+                async function addBrand() {
+                    try {
+                        // Création d'un objet FormData
+                        const formData = new FormData();
+                        formData.append('brandName', brandName);
+
+                        const response = await fetch('/Vehicles/AddBrand', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const data = await response.json();
+                        console.log(data);
+
+                        if (data.success) {
+                            var newBrandOption = new Option(data.brand.brand, data.brand.id, false, true);
+                            document.getElementById('VehicleBrandId').appendChild(newBrandOption);
+                            document.getElementById('VehicleBrandId').value = data.brand.id;
+                            loadVehicleModels(data.brand.Id);  // Recharger les modèles pour la nouvelle marque
+
+                            var addBrandModal = bootstrap.Modal.getInstance(document.getElementById('addBrandModal'));
+                            addBrandModal.hide();
+                        } else {
+                            alert(data.message || 'Erreur lors de l’ajout de la marque.');
+                        }
+                    } catch (error) {
+                        alert('Erreur lors de l’enregistrement de la marque.');
+                    }
+                }
+
+                addBrand();
+            } else {
+                alert('Veuillez entrer un nom de marque valide.');
+            }
+
+
+        });
+
+        // Afficher le modal pour ajouter un modèle
+        document.getElementById('addModelBtn').addEventListener('click', function () {
+            var addModelModal = new bootstrap.Modal(document.getElementById('addModelModal'));
+            addModelModal.show();
+        });
+
+        // Sauvegarder le nouveau modèle
+        document.getElementById('saveModelBtn').addEventListener('click', function () {
+            var modelName = document.getElementById('newModelName').value.trim();
+            var brandId = document.getElementById('VehicleBrandId').value;
+
+            if (modelName && brandId) {
+                async function addModel() {
+                    try {
+                        // Création d'un objet FormData
+                        const formData = new FormData();
+                        formData.append('modelName', modelName);
+                        formData.append('brandId', brandId);
+
+                        const response = await fetch('/Vehicles/AddModel', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            var newModelOption = new Option(data.model.model, data.model.id, false, true);
+                            document.getElementById('VehicleModelId').appendChild(newModelOption);
+                            document.getElementById('VehicleModelId').value = data.model.id;
+
+                            // Fermer la modale après ajout
+                            var addModelModal = bootstrap.Modal.getInstance(document.getElementById('addModelModal'));
+                            addModelModal.hide();
+                        } else {
+                            alert(data.message || 'Erreur lors de l’ajout du modèle.');
+                        }
+                    } catch (error) {
+                        alert('Erreur lors de l’enregistrement du modèle.');
+                    }
+                }
+
+                addModel();
+            } else {
+                alert('Veuillez entrer un nom de modèle valide et sélectionner une marque.');
+            }
+        });
+
+
+        // Réinitialiser les champs des modales après fermeture
+        document.getElementById('addBrandModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('newBrandName').value = '';
+        });
+
+        document.getElementById('addModelModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('newModelName').value = '';
+        });
+
+    });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            var forms = document.querySelectorAll("form");
+
+        forms.forEach(function (form) {
+            form.addEventListener("submit", function (event) {
+                var prixInputs = form.querySelectorAll("input.prix");
+
+                prixInputs.forEach(function (input) {
+                    var valeur = input.value;
+                    input.value = valeur.replace(",", ".");
+                });
+            });
+            });
+        });
+</script>

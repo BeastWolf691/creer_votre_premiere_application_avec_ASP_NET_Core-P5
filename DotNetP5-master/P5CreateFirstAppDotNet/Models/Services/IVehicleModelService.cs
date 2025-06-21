@@ -5,12 +5,8 @@ namespace P5CreateFirstAppDotNet.Models.Services
 {
     public interface IVehicleModelService
     {
-
-        Task<IEnumerable<VehicleModelViewModel>> GetAllModelsAsync();
-        Task<VehicleModelViewModel> GetModelByIdAsync(int id);
-        Task AddModelAsync(VehicleModelViewModel vehicleModelViewModel);
-        Task UpdateModelAsync(VehicleModelViewModel vehicleModelViewModel);
-        Task DeleteModelAsync(int id);
-        VehicleModelViewModel MapToViewModel(VehicleModel vehicleModel);
+        Task<IEnumerable<VehicleModel>> GetAllVehicleModelsAsync();
+        Task<VehicleModel?> GetVehicleModelByIdAsync(int modelId);
+        Task<VehicleModel> AddNewModelAsync(string modelName, int brandId);
     }
 }

@@ -19,29 +19,36 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
             return await _context.Repairs.ToListAsync();
         }
 
-        public async Task<Repair> GetRepairByIdAsync(int id)
+        public async Task<Repair?> GetRepairByIdAsync(int RepairId)
         {
-            return await _context.Repairs.FindAsync(id)
-                ?? throw new KeyNotFoundException($"Repair with ID {id} not found.");
+            return await _context.Repairs.FirstOrDefaultAsync(p => p.Id == RepairId);
         }
 
-        public async Task AddRepairAsync(Repair repair)
+        public async Task<Repair?> GetRepairByVehicleIdAsync(int vehicleId)
         {
-            await _context.Repairs.AddAsync(repair);
+            return await _context.Repairs.FirstOrDefaultAsync(p => p.VehicleId == vehicleId);
+        }
+
+        public async Task AddRepairAsync(Repair Repair)
+        {
+            _context.Repairs.Add(Repair);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateRepairAsync(Repair repair)
+        public async Task UpdateRepairAsync(Repair Repair)
         {
-            _context.Entry(repair).State = EntityState.Modified;
+            _context.Repairs.Update(Repair);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteRepairAsync(int id)
+        public async Task DeleteRepairAsync(int RepairId)
         {
-            var repair = await GetRepairByIdAsync(id);
-            _context.Repairs.Remove(repair);
-            await _context.SaveChangesAsync();
+            Repair? repair = await _context.Repairs.FindAsync(RepairId);
+            if (repair is not null)
+            {
+                _context.Repairs.Remove(repair);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

@@ -1,0 +1,111 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using P5CreateFirstAppDotNet.Models.Entities
+@inject SignInManager<IdentityUser> SignInManager
+@model P5CreateFirstAppDotNet.Models.ViewModels.VehicleViewModel
+
+@{
+	ViewData["Title"] = "Détails de la voiture";
+	// Formatage du prix de vente
+	string prixAffiche = "Non défini";
+
+    if (Model.SalePrice.HasValue)
+    {
+        decimal prix = Model.SalePrice.Value;
+        prixAffiche = prix % 1 == 0
+            ? prix.ToString("N0") + " €"
+            : prix.ToString("N2") + " €";
+    }
+}
+
+<div class="container" style="max-width: 900px; margin: 40px auto;">
+	<a asp-action="Index" class="btn btn-return mb-4">
+		&#x27F5; Retour
+	</a>
+
+    <div class="row align-items-start">
+        <div class="col-md-5 text-center mb-3">
+            <img src="@Model.MediaPath" alt="Image du véhicule" class="img-fluid rounded border"
+                 style="max-height: 400px;" />
+        </div>
+
+        <div class="col-md-7">
+            @if (User.IsInRole("Admin"))
+            {
+                <p class="mb-1">Vous avez publié cette annonce, vous pouvez :</p>
+                <div class="d-flex gap-3 mb-4">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" style="text-decoration: underline; background: none; border: none; color: #6c757d;">
+                        Modifier
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@Model.Id" style="text-decoration: underline; background: none; border: none; color: red;">
+                        Supprimer
+                    </a>
+                </div>
+            }
+
+            <h5 class="fw-bold">
+                Prix de vente <span class="fw-normal">@prixAffiche</span>
+            </h5>
+            <p><strong>Année :</strong> @Model.YearOfProduction</p>
+            @if (Model.Status == VehicleStatus.Vendu)
+            {
+                <div>
+                    Vendue le @(Model.SaleDate?.ToShortDateString() ?? "date inconnue") pour @(Model.SalePrice?.ToString("N0") ?? "prix inconnu") €
+                </div>
+            }
+            <p><strong>Marque :</strong> @Model.BrandName</p>
+            <p><strong>Modèle :</strong> @Model.ModelName</p>
+            <p><strong>Finition :</strong> @Model.TrimName</p>
+
+            <div class="mb-3">
+                <h5>Description</h5>
+                <p>@Model.Description</p>
+            </div>
+
+            @if (User.IsInRole("Admin"))
+            {
+                <div class="container">
+                    <div class="row mb-2 align-items-center">
+                        <div class="col-sm-4 fw-semibold">Prix d'achat :</div>
+                        <div class="col-sm-8">@Model.PurchasePrice?.ToString("N0") €</div>
+                    </div>
+                    <div class="row mb-2 align-items-center">
+                        <div class="col-sm-4 fw-semibold">Date d'achat :</div>
+                        <div class="col-sm-8">@Model.PurchaseDate?.ToShortDateString()</div>
+                    </div>
+
+                    @if (@Model.RepairDate != null || @Model.RepairCost != null)
+                    {
+                        <div class="row mb-2 align-items-center">
+                            <div class="col-sm-4 fw-semibold">Date de la réparation :</div>
+                            <div class="col-sm-8">@Model.RepairDate?.ToShortDateString()</div>
+                        </div>
+                        <div class="row mb-2 align-items-center">
+                            <div class="col-sm-4 fw-semibold">Description de la réparation :</div>
+                            <div class="col-sm-8">@Model.RepairDescription</div>
+                        </div>
+                        <div class="row mb-2 align-items-center">
+                            <div class="col-sm-4 fw-semibold">Prix de la réparation :</div>
+                            <div class="col-sm-8">@Model.RepairCost?.ToString("N0") €</div>
+                        </div>
+                    }
+
+                    @if (@Model.SaleDate != null || @Model.SalePrice != null)
+                    {
+                        <div class="row mb-2 align-items-center">
+                            <div class="col-sm-4 fw-semibold">Date de la vente :</div>
+                            <div class="col-sm-8">@Model.SaleDate?.ToShortDateString()</div>
+                        </div>
+                        <div class="row mb-2 align-items-center">
+                            <div class="col-sm-4 fw-semibold">Prix de la vente :</div>
+                            <div class="col-sm-8">@Model.SalePrice?.ToString("N0") €</div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

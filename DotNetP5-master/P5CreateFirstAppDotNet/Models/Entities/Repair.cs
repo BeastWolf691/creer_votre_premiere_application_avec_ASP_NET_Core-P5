@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Runtime.ConstrainedExecution;
 using P5CreateFirstAppDotNet.Models.Entities;
 
 
@@ -7,13 +9,16 @@ namespace P5CreateFirstAppDotNet.Models.Entities
 {
     public class Repair
     {
+        public int Id { get; set; }
+        public int VehicleId { get; set; }
+        public string Description { get; set; } = null!;
+        public DateTime RepairDate { get; set; }
+           
+        [DataType(DataType.Currency)]
+        public decimal RepairCost { get; set; }
 
-        // Propriétés de l'entité Repair
-        public int RepairId { get; set; }
-        public double RepairCost { get; set; }
-        public string Name { get; set; } = string.Empty;
-
-        public ICollection<VehicleRepair> VehicleRepairs { get; set; } = new List<VehicleRepair>();
+        [Required]
+        public Vehicle Vehicle { get; set; } = null!;
 
     }
 }

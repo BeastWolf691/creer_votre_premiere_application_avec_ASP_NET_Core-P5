@@ -15,93 +15,50 @@ namespace P5CreateFirstAppDotNet.Models.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Vehicle>> GetAllVehicleAsync()
+        public async Task<IEnumerable<Vehicle>> GetAllVehiclesAsync()
         {
             return await _context.Vehicles
+                .Include(v => v.VehicleBrand)
                 .Include(v => v.VehicleModel)
-                    .ThenInclude(vm => vm.Brand)
-                .Include(v => v.Trim)
-                .Include(v => v.VehicleRepairs)
-                .Include(v => v.Status)
+                .Include(v => v.VehicleTrim)
+                .Include(v => v.YearOfProduction)
                 .ToListAsync();
         }
 
-        public async Task<Vehicle> GetVehicleByIdAsync(int id)
+        public async Task<Vehicle?> GetVehicleByIdAsync(int vehicleId)
         {
             return await _context.Vehicles
+                .Include(v => v.VehicleBrand)
                 .Include(v => v.VehicleModel)
-                .ThenInclude(vm => vm.Brand)
-                .Include(v => v.Trim)
-                .Include(v => v.VehicleRepairs)
-                    .ThenInclude(vr => vr.Repair)
-                .Include(v => v.Status)
-                .FirstAsync(v => v.VehicleId == id);
+                .Include(v => v.VehicleTrim)
+                .Include(v => v.YearOfProduction)
+                .FirstOrDefaultAsync(v => v.Id == vehicleId);
         }
 
         public async Task AddVehicleAsync(Vehicle vehicle)
         {
-            await _context.Vehicles.AddAsync(vehicle);
+            _context.Vehicles.Add(vehicle);
             await _context.SaveChangesAsync();
         }
 
         public async Task UpdateVehicleAsync(Vehicle vehicle)
         {
-            var existingVehicle = await _context.Vehicles.FindAsync(vehicle.VehicleId);
-            if (existingVehicle == null)
-            {
-                throw new KeyNotFoundException($"Le véhicule avec l'ID {vehicle.VehicleId} est introuvable.");
-            }
-            // Mise à jour manuelle des propriétés
-            existingVehicle.VinCode = vehicle.VinCode;
-            existingVehicle.Year = vehicle.Year;
-            existingVehicle.PurchaseDate = vehicle.PurchaseDate;
-            existingVehicle.PurchasePrice = vehicle.PurchasePrice;
-            existingVehicle.Description = vehicle.Description;
-            existingVehicle.AvailableForSaleDate = vehicle.AvailableForSaleDate;
-            existingVehicle.SalePrice = vehicle.SalePrice;
-            existingVehicle.ImagePath = vehicle.ImagePath;
-            existingVehicle.VehicleModelId = vehicle.VehicleModelId;
-            existingVehicle.TrimId = vehicle.TrimId;
-            existingVehicle.StatusId = vehicle.StatusId;
-
+            _context.Vehicles.Update(vehicle);
             await _context.SaveChangesAsync();
         }
-
-        public async Task UpdateVehicleStatusAsync(int vehicleId, Status newStatus)
-        {
-            var vehicle = await _context.Vehicles.FindAsync(vehicleId)
-                ?? throw new KeyNotFoundException($"Le véhicule avec l'ID {vehicleId} est introuvable.");
-
-            vehicle.Status = newStatus;
-            _context.Entry(vehicle).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task<IEnumerable<Vehicle>> GetVehiclesByStatusAsync(Status status)
-        {
-            return await _context.Vehicles
-                .Where(v => v.StatusId == status.StatusId)
-                .Include(v => v.VehicleModel)
-                .ThenInclude(vm => vm.Brand)
-                .Include(v => v.Trim)
-                .Include(v => v.VehicleRepairs)
-                .Include(v => v.Status)
-                .ToListAsync();
-        }
-
         public async Task DeleteVehicleAsync(int vehicleId)
         {
-            var vehicle = await _context.Vehicles.FindAsync(vehicleId);
-            if (vehicle != null)
+            Vehicle? vehicle = await _context.Vehicles.FindAsync(vehicleId);
+            if (vehicle is not null)
             {
                 _context.Vehicles.Remove(vehicle);
                 await _context.SaveChangesAsync();
             }
-            else
-            {
-                throw new KeyNotFoundException($"Le véhicule avec l'ID {vehicleId} est introuvable.");
-            }
+        }
 
+        public async Task<bool> VehicleExistsAsync(int id)
+        {
+            return await _context.Vehicles.AnyAsync(v => v.Id == id);
         }
     }
 }

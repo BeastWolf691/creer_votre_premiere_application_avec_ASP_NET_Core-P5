@@ -1,69 +1,62 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using P5CreateFirstAppDotNet.Models.Entities;
 
 namespace P5CreateFirstAppDotNet.Models.ViewModels
 {
     public class VehicleViewModel
     {
-        public int VehicleId { get; set; }
-
-        [StringLength(17, MinimumLength = 11, ErrorMessage = "Le code VIN doit contenir entre 11 et 17 caractères.")]
-        [Display(Name = "Code VIN")]
-        public string? VinCode { get; set; }
-
-        [Required(ErrorMessage = "L'année est requise.")]
-        [Range(1990, 2100, ErrorMessage = "L'année doit être supérieure ou égale à 1990.")]
-        [Display(Name = "Année de sortie")]
-        public int Year { get; set; }
-
-        [Required(ErrorMessage = "La marque est requise.")]
-        [Display(Name = "Marque")]
-        public int BrandId { get; set; }
-        public string? BrandName { get; set; }
-
-        [Required(ErrorMessage = "Le modèle est requis.")]
-        [Display(Name = "Modèle")]
+        public int Id { get; set; }
+        public string Label { get; set; } = null!;
+        public string VIN { get; set; } = null!;
+        public string Description { get; set; } = null!;
+        public int YearOfProductionId { get; set; }
+        public int VehicleBrandId { get; set; }
         public int VehicleModelId { get; set; }
-        public string? VehicleModelName { get; set; }
+        public int? VehicleTrimId { get; set; }
+        public VehicleStatus Status { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime? PurchaseDate { get; set; }
 
-        [Required(ErrorMessage = "La finition est requise.")]
-        [Display(Name = "Finition")]
-        public int TrimId { get; set; }
-        public string? TrimName { get; set; }
+        [DataType(DataType.Currency)]
+        public decimal? PurchasePrice { get; set; }
 
-        [Required(ErrorMessage = "La date d'achat est requise.")]
-        [DataType(DataType.Date, ErrorMessage = "La date d'achat doit être au format valide.")]
-        [Display(Name = "Date d'achat")]
-        public DateTime PurchaseDate { get; set; }
-
-        [Required(ErrorMessage = "Le prix d'achat est requis.")]
-        [Display(Name = "Prix d'achat")]
-        public string PurchasePrice { get; set; } = string.Empty;
-
-        [StringLength(500, ErrorMessage = "La description ne peut pas dépasser 500 caractères.")]
-        public string? Description { get; set; }
-
-        [Display(Name = "Disponible à la vente")]
-        public DateTime? AvailableForSaleDate { get; set; }
-
-        [Display(Name = "Prix de vente")]
-        public string? SalePrice { get; set; }
-
-        [Display(Name = "Date de vente")]
+        public string? RepairDescription { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime? RepairDate { get; set; }
+        [DataType(DataType.Currency)]
+        public decimal? RepairCost { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? SaleDate { get; set; }
+        [DataType(DataType.Currency)]
+        public decimal? SalePrice { get; set; }
+        public List<IFormFile>? MediaFiles { get; set; }
 
-        [Required(ErrorMessage = "Le statut du véhicule est requis.")]
-        [Display(Name = "Statut")]
-        public int StatusId { get; set; }
-        public string? StatusName { get; set; }
+        [BindNever]
+        public int? YearOfProduction { get; set; }
+        [BindNever]
+        public string? BrandName { get; set; }
+        [BindNever]
+        public string? ModelName { get; set; }
+        [BindNever]
+        public string? TrimName { get; set; }
+        [BindNever]
+        public string? MediaPath { get; set; }
+        [BindNever]
+        public string? MediaLabel { get; set; }
 
-        [Display(Name = "Image du véhicule")]
-        public IFormFile? ImageFile { get; set; }
-        public string? ImagePath { get; set; }
+        public ICollection<VehicleMedia>? VehicleMedia { get; set; } = new List<VehicleMedia>();
 
-        public List<int> SelectedRepairIds { get; set; } = new List<int>();
-        public List<Repair>? Repairs { get; set; }
-        public VehicleModel? VehicleModel { get; set; }
+        [BindNever]
+        public IEnumerable<SelectListItem>? VehicleBrands { get; set; }
+        [BindNever]
+        public IEnumerable<SelectListItem>? VehicleModels { get; set; }
+        [BindNever]
+        public IEnumerable<SelectListItem>? VehicleTrims { get; set; }
+        [BindNever]
+        public IEnumerable<SelectListItem>? YearsOfProduction { get; set; }
+        public List<Repair>? Repairs { get; set; } = new();
+
     }
 }

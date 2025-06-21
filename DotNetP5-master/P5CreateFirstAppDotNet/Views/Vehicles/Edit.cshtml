@@ -1,0 +1,192 @@
+﻿@model P5CreateFirstAppDotNet.Models.ViewModels.VehicleViewModel
+@Html.ValidationSummary(true)
+@{
+    ViewData["Title"] = "Modifier un véhicule";
+}
+
+<div class="container" style="max-width: 800px; margin: 40px auto;">
+    <h2 class="mt-5 mb-3" style="text-align: center">Modifier un véhicule</h2>
+
+    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+        @* Anti-forgery token *@
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" asp-for="Id" />
+
+        <div class="form-group mb-3">
+            <label asp-for="Label" class="form-label">Nom de la voiture</label>
+            <input asp-for="Label" class="form-control" />
+            <span asp-validation-for="Label" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="VIN" class="form-label"></label>
+            <input asp-for="VIN" class="form-control" />
+            <span asp-validation-for="VIN" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="YearOfProductionId" class="form-label">Année de production de la voiture</label>
+            <select asp-for="YearOfProductionId" class="form-select" asp-items="Model.YearsOfProduction"></select>
+            <span asp-validation-for="YearOfProduction" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="PurchaseDate" class="form-label">Date d'achat</label>
+            <input asp-for="PurchaseDate" class="form-control" type="date" />
+            <span asp-validation-for="PurchaseDate" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="PurchasePrice" class="form-label">Prix d'achat</label>
+            <input asp-for="PurchasePrice" class="form-control"/>
+            <span asp-validation-for="PurchasePrice" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Description" class="form-label">Description</label>
+            <textarea asp-for="Description" class="form-control prix"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        @* Pour les listes déroulantes: *@
+        <!-- Marque -->
+        <div class="form-group mb-3">
+            <label asp-for="VehicleBrandId" class="form-label">Marque</label>
+            <select asp-for="VehicleBrandId" asp-items="Model.VehicleBrands" class="form-select"></select>
+            <span asp-validation-for="VehicleBrandId" class="text-danger"></span>
+        </div>
+        <button type="button" id="addBrandBtn" class="btn btn-custom">Ajouter une nouvelle marque</button>
+
+        <div class="modal fade" id="addBrandModal" tabindex="-1" aria-labelledby="addBrandModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addBrandModalLabel">Ajouter une nouvelle marque</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="newBrandName">Nom de la nouvelle marque</label>
+                            <input type="text" class="form-control" id="newBrandName" placeholder="Entrez le nom de la marque">
+                        </div>
+                    </div>
+					<div class="modal-footer">
+                        <button type="button" id="saveBrandBtn" class="btn btn-custom">Enregistrer</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modèle -->
+        <div class="form-group mb-3">
+            <label asp-for="VehicleModelId" class="form-label">Modèle</label>
+            <select asp-for="VehicleModelId" asp-items="Model.VehicleModels" class="form-select"></select>
+            <span asp-validation-for="VehicleModelId" class="text-danger"></span>
+        </div>
+        <button type="button" id="addModelBtn" class="btn btn-custom">Ajouter un modèle</button>
+
+        <div class="modal fade" id="addModelModal" tabindex="-1" aria-labelledby="addModelModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addModelModalLabel">Ajouter un nouveau modèle</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="newModelName">Nom du modèle</label>
+                            <input type="text" id="newModelName" class="form-control" placeholder="Nom du modèle" />
+                        </div>
+                    </div>
+					<div class="modal-footer">
+                        <button id="saveModelBtn" type="button" class="btn btn-custom">Enregistrer le modèle</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Finition -->
+        <div class="form-group mb-3">
+            <label asp-for="VehicleTrimId" class="form-label">Finition</label>
+            <select asp-for="VehicleTrimId" asp-items="Model.VehicleTrims" class="form-select"></select>
+            <span asp-validation-for="VehicleTrimId" class="text-danger"></span>
+        </div>
+
+        <!-- Image -->
+        <div class="form-group mb-3">
+            <label for="MediaFiles" class="form-label">Ajoutez une image</label>
+            <input type="file" asp-for="MediaFiles" class="form-control" />
+            <span asp-validation-for="MediaFiles" class="text-danger"></span>
+            @if (Model.MediaPath != null)
+            {
+                <div class="form-group">
+                    <label>Fichier existant :</label><br />
+                    <a href="@Model.MediaPath" target="_blank">
+                        <img src="@Model.MediaPath"
+                             alt="@Model.MediaLabel"
+                             style="max-width: 150px; max-height: 100px; border: 1px solid #ccc; border-radius: 4px;" />
+                    </a>
+                </div>
+            }
+        </div>
+
+        <p>Voulez-vous ajouter/modifier une réparation ? <button type="button" class="btn btn-custom" id="showRepairBtn">+</button></p>
+                
+        <div id="repairSection" class="form-group" style="display: none;">
+            <label asp-for="RepairDate" class="control-label">Date de réparation</label><br />
+            <input asp-for="RepairDate" class="form-control" type="date" />
+            <span asp-validation-for="RepairDate" class="text-danger"></span>
+            <label asp-for="RepairDescription" class="control-label">Description de la réparation</label>
+            <input asp-for="RepairDescription" class="form-control" />
+            <span asp-validation-for="RepairDescription" class="text-danger"></span>
+            <label asp-for="RepairCost" class="control-label">Coût de la réparation</label>
+            <input asp-for="RepairCost" class="form-control prix" />
+            <span asp-validation-for="RepairCost" class="text-danger"></span>
+        </div>
+
+        <!-- Section de vente -->
+        <hr />
+        <p>La voiture a-t-elle été vendue ? <button type="button" class="btn btn-custom" id="showSaleBtn">+</button></p>
+                
+        <div id="saleSection" class="form-group" style="display: none;">
+            <label asp-for="SaleDate" class="control-label">Date de la vente</label>
+            <input asp-for="SaleDate" class="form-control" type="date" />
+            <span asp-validation-for="SaleDate" class="text-danger"></span>
+            <label asp-for="SalePrice" class="control-label">Prix de vente</label>
+            <input asp-for="SalePrice" class="form-control prix" />
+            <span asp-validation-for="SalePrice" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-custom">Mettre à jour</button>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Annuler</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_scripts" />
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('showRepairBtn').addEventListener('click', function () {
+            var repairSection = document.getElementById('repairSection');
+            if (repairSection.style.display === 'none' || repairSection.style.display === '') {
+                repairSection.style.display = 'block';
+            } else {
+                repairSection.style.display = 'none';
+            }
+        });
+
+        document.getElementById('showSaleBtn').addEventListener('click', function () {
+            var saleSection = document.getElementById('saleSection');
+            if (saleSection.style.display === 'none' || saleSection.style.display === '') {
+                saleSection.style.display = 'block';
+            } else {
+                saleSection.style.display = 'none';
+            }
+        });
+    </script>
+}

@@ -1,0 +1,65 @@
+﻿@using P5CreateFirstAppDotNet.Models.Entities
+@model IEnumerable<P5CreateFirstAppDotNet.Models.ViewModels.VehicleViewModel>
+@using System.Linq
+
+@{
+    ViewData["Title"] = "Nos Voitures";
+
+}
+
+<div class="container" style="max-width: 800px; margin: 40px auto;">
+
+    <h2 class="mt-5 mb-3 text-center">Nos voitures</h2>
+
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="text-center mb-4">
+            <a class="btn btn-custom btn-add-car" asp-action="Create">+ Ajouter une voiture</a>
+        </div>
+    }
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            // Afficher uniquement si voiture disponible, vendue ou achetée (pour admin)
+            if (item.Status == VehicleStatus.Disponible ||
+            item.Status == VehicleStatus.Vendu ||
+            (item.Status == VehicleStatus.Maintenance && User.Identity.IsAuthenticated))
+            {
+                <div class="col-md-6 mb-4">
+                    <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none text-dark">
+                        <div class="card shadow-sm h-100 d-flex flex-row">
+                            <div class="vehicle-img-container">
+                                @if (item.VehicleMedia != null && item.VehicleMedia.Any())
+                                {
+                                    var firstMedia = item.VehicleMedia.FirstOrDefault()?.Media;
+
+                                    if (firstMedia != null && !string.IsNullOrEmpty(firstMedia.Path))
+                                    {
+                                        <img src="@(firstMedia.Path.StartsWith("/") ? firstMedia.Path : "/" + firstMedia.Path)" alt="@firstMedia.Label" class="vehicle-image" />
+                                    }
+                                }
+                            </div>
+                            <div class="vehicle-info">
+                                <div>
+                                    <h5 class="card-title">@item.Label</h5>
+
+                                    <ul class="car-details list-unstyled mb-0">
+                                        <li><strong>Prix de vente</strong><br /> @item.SalePrice?.ToString("N0") €</li>
+                                        <li><strong>Année :</strong> @item.YearOfProduction</li>
+                                        <li><strong>Marque :</strong> @item.BrandName</li>
+                                        <li><strong>Modèle :</strong> @item.ModelName</li>
+                                        <li><strong>Finition :</strong> @item.TrimName</li>
+                                        <li><strong>Status :</strong> @item.Status.ToString()</li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        }
+    </div>
+
+</div>

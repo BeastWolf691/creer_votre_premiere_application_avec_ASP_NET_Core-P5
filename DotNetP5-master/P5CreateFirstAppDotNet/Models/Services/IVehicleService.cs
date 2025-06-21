@@ -5,15 +5,15 @@ namespace P5CreateFirstAppDotNet.Models.Services
 {
     public interface IVehicleService
     {
- 
-        Task<List<VehicleViewModel>?> GetAllVehicleViewModelsAsync();
-        Task<VehicleViewModel?> GetVehicleViewModelAsync(int id);
-        Task AddVehicleAsync(VehicleViewModel vehicleViewModel);
-        Task AssignRepairsToVehicleAsync(int vehicleId, List<int> repairIds);
-        Task UpdateVehicleAsync(VehicleViewModel vehicleViewModel);
-        VehicleViewModel MapVehicleToViewModel(Vehicle vehicle);
-        Vehicle MapViewModelToEntity(VehicleViewModel vm);
+        Task<IEnumerable<VehicleViewModel>> GetAllVehiclesAsync();
+        Task<VehicleViewModel> GetVehicleByIdAsync(int vehicleId);
+        Task<IEnumerable<VehicleModel>> GetVehicleModelByBrandIdAsync(int brandId);
 
-        Task DeleteVehicleAsync(int id);
+        Task<Vehicle> AddVehicleAsync(VehicleViewModel vehicleViewModel);
+        Task UpdateVehicleAsync(int vehicleId, VehicleViewModel vehicleViewModel);
+        Task DeleteVehicleAsync(int vehicleId);
+        Task<bool> ValidateVehicleModelWithBrandAsync(int vehicleModelId, int vehicleBrandId);
+        Task<IEnumerable<Media>> GetVehicleMediaAsync(int vehicleId);
+        Task<bool> VehicleExistsAsync(int id);
     }
 }

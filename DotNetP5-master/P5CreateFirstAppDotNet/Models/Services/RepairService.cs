@@ -16,54 +16,41 @@ namespace P5CreateFirstAppDotNet.Models.Services
             _repairRepository = repairRepository;
         }
 
-        public async Task<IEnumerable<RepairViewModel>> GetAllRepairsAsync()
+        public async Task<Repair?> GetRepairByVehicleIdAsync(int vehicleId)
         {
-            var repairs = await _repairRepository.GetAllRepairsAsync();
-            return repairs.Select(MapToViewModel);
+            return await _repairRepository.GetRepairByVehicleIdAsync(vehicleId);
         }
 
-        public async Task<RepairViewModel> GetRepairByIdAsync(int id)
+        public async Task AddRepairAsync(Repair repair)
         {
-            var repair = await _repairRepository.GetRepairByIdAsync(id);
-            return MapToViewModel(repair);
-        }
-
-        public async Task AddRepairAsync(RepairViewModel repairViewModel)
-        {
-            var repair = MapToEntity(repairViewModel);
             await _repairRepository.AddRepairAsync(repair);
-
         }
 
-        public async Task UpdateRepairAsync(RepairViewModel repairViewModel)
+        public async Task UpdateRepairAsync(int vehicleId, VehicleViewModel vehicleViewModel)
         {
-            var repair = MapToEntity(repairViewModel);
+            Repair? repair = await GetRepairByVehicleIdAsync(vehicleId);
+            if (repair is null)
+            {
+                repair = new Repair
+                {
+                    VehicleId = vehicleId,
+                    Description = vehicleViewModel.RepairDescription ?? string.Empty,
+                    RepairDate = vehicleViewModel.RepairDate ?? DateTime.Now,
+                    RepairCost = vehicleViewModel.RepairCost ?? 0
+                };
+                await _repairRepository.AddRepairAsync(repair);
+                return;
+            }
+            if (!string.IsNullOrWhiteSpace(vehicleViewModel.RepairDescription))
+                repair.Description = vehicleViewModel.RepairDescription;
+
+            if (vehicleViewModel.RepairDate.HasValue)
+                repair.RepairDate = vehicleViewModel.RepairDate.Value;
+
+            if (vehicleViewModel.RepairCost.HasValue)
+                repair.RepairCost = vehicleViewModel.RepairCost.Value;
+
             await _repairRepository.UpdateRepairAsync(repair);
-        }
-
-        public async Task DeleteRepairAsync(int id)
-        {
-            await _repairRepository.DeleteRepairAsync(id);
-        }
-
-        public RepairViewModel MapToViewModel(Repair repair)
-        {
-            return new RepairViewModel
-            {
-                RepairId = repair.RepairId,
-                Name = repair.Name,
-                RepairCost = repair.RepairCost.ToString(CultureInfo.InvariantCulture)
-            };
-        }
-
-        private Repair MapToEntity(RepairViewModel repairViewModel)
-        {
-            return new Repair
-            {
-                RepairId = repairViewModel.RepairId,
-                Name = repairViewModel.Name,
-                RepairCost = double.Parse(repairViewModel.RepairCost, CultureInfo.InvariantCulture)
-            };
         }
     }
 }
