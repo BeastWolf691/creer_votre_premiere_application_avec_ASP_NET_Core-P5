@@ -214,6 +214,7 @@ namespace P5CreateFirstAppDotNet.Controllers
                         };
                         await _repairService.UpdateRepairAsync(id, vehicle);
                         vehicle.Status = VehicleStatus.Disponible;
+                        await _vehicleService.UpdateVehicleAsync(id, vehicle);
                     }
                     if (vehicle.SalePrice is not null && vehicle.SaleDate is not null)
                     {
