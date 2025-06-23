@@ -5,16 +5,7 @@
 
 @{
 	ViewData["Title"] = "Détails de la voiture";
-	// Formatage du prix de vente
-	string prixAffiche = "Non défini";
 
-    if (Model.SalePrice.HasValue)
-    {
-        decimal prix = Model.SalePrice.Value;
-        prixAffiche = prix % 1 == 0
-            ? prix.ToString("N0") + " €"
-            : prix.ToString("N2") + " €";
-    }
 }
 
 <main class="container" style="max-width: 900px; margin: 40px auto;">
@@ -22,7 +13,7 @@
 		&#x27F5; Retour
 	</a>
 
-    <article class="row align-items-start" aria-describedby="voitureDetails">
+    <article class="row align-items-start" aria-describedby="detailsVehicle">
 
         <div class="col-md-5 text-center mb-3">
             <img src="@Model.MediaPath" alt="Image du véhicule" class="img-fluid rounded border"
