@@ -117,6 +117,13 @@
             <span asp-validation-for="VehicleTrimId" class="text-danger"></span>
         </div>
 
+        <!-- Prix de vente -->
+        <div class="form-group mb-3">
+            <label asp-for="SalePrice" class="control-label">Prix de vente</label>
+            <input asp-for="SalePrice" class="form-control prix" />
+			<span asp-validation-for="SalePrice" class="text-danger"></span>
+		</div>
+
         <!-- Image -->
         <div class="form-group mb-3">
             <label for="MediaFiles" class="form-label">Ajoutez une image</label>
@@ -158,9 +165,6 @@
             <label asp-for="SaleDate" class="control-label">Date de la vente</label>
             <input asp-for="SaleDate" class="form-control" type="date" />
             <span asp-validation-for="SaleDate" class="text-danger"></span>
-            <label asp-for="SalePrice" class="control-label">Prix de vente</label>
-            <input asp-for="SalePrice" class="form-control prix" />
-            <span asp-validation-for="SalePrice" class="text-danger"></span>
         </div>
 
         <button type="submit" class="btn btn-custom">Mettre à jour</button>

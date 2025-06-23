@@ -22,10 +22,10 @@
 		&#x27F5; Retour
 	</a>
 
-    <article class="row align-items-start" aria-labelledby="voiture-title">
+    <article class="row align-items-start" aria-describedby="voitureDetails">
 
         <div class="col-md-5 text-center mb-3">
-            <img src="@Model.MediaPath" alt="Image du véhicule @Model.MediaPath" class="img-fluid rounded border"
+            <img src="@Model.MediaPath" alt="Image du véhicule" class="img-fluid rounded border"
                  style="max-height: 400px;" />
         </div>
 
@@ -46,27 +46,17 @@
             }
 
             <ul class="list-unstyled">
-                <li class="fw-bold">
-                    Prix de vente <span class="fw-normal">@prixAffiche</span>
-                </li>
 
-                <li><strong>Année :</strong> @Model.YearOfProduction</li>
-
-                @if (Model.Status == VehicleStatus.Vendu)
+                <li><strong>Prix de la vente :</strong> @Model.SalePrice?.ToString("N0") €</li>
+                @if (User.IsInRole("Admin"))
                 {
-                    <li aria-live="polite">
-                        <strong>Statut :</strong> Vendue le @(Model.SaleDate?.ToShortDateString() ?? "date inconnue")
-                        pour @(Model.SalePrice?.ToString("N0") ?? "prix inconnu") €
-                    </li>
+                    <li><strong>Date de la vente :</strong> @Model.SaleDate?.ToShortDateString()</li>
                 }
-
+                <li><strong>Année :</strong> @Model.YearOfProduction</li>
                 <li><strong>Marque :</strong> @Model.BrandName</li>
                 <li><strong>Modèle :</strong> @Model.ModelName</li>
                 <li><strong>Finition :</strong> @Model.TrimName</li>
-
-                <li>
-                    <strong>Description :</strong><br />
-                    <span>@Model.Description</span>
+                <li><strong>Description :</strong><br /><span>@Model.Description</span>
                 </li>
             </ul>
 
@@ -81,12 +71,6 @@
                         <li><strong>Date de la réparation :</strong> @Model.RepairDate?.ToShortDateString()</li>
                         <li><strong>Description de la réparation :</strong> @Model.RepairDescription</li>
                         <li><strong>Prix de la réparation :</strong> @Model.RepairCost?.ToString("N0") €</li>
-                    }
-
-                    @if (Model.SaleDate != null || Model.SalePrice != null)
-                    {
-                        <li><strong>Date de la vente :</strong> @Model.SaleDate?.ToShortDateString()</li>
-                        <li><strong>Prix de la vente :</strong> @Model.SalePrice?.ToString("N0") €</li>
                     }
                 </ul>
             }

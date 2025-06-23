@@ -220,15 +220,17 @@ namespace P5CreateFirstAppDotNet.Controllers
                         vehicle.Status = VehicleStatus.Disponible;
                         await _vehicleService.UpdateVehicleAsync(id, vehicle);
                     }
+                    // Cas 1 : un prix de vente est renseigné, mais pas la date ⇒ on enregistre juste le prix
+                    if (vehicle.SalePrice is not null && vehicle.SaleDate is null)
+                    {
+                        await _saleService.UpdateSaleAsync(id, vehicle);
+                        // Pas de changement de statut ici
+                    }
+                    // Cas 2 : prix + date présents ⇒ vente confirmée
                     if (vehicle.SalePrice is not null && vehicle.SaleDate is not null)
                     {
-                        Sale sale = new Sale
-                        {
-                            VehicleId = vehicle.Id,
-                            SaleDate = vehicle.SaleDate ?? DateTime.Now,
-                            SalePrice = vehicle.SalePrice ?? 0
-                        };
                         await _saleService.UpdateSaleAsync(id, vehicle);
+
                         vehicle.Status = VehicleStatus.Vendu;
                         await _vehicleService.UpdateVehicleAsync(id, vehicle);
                     }

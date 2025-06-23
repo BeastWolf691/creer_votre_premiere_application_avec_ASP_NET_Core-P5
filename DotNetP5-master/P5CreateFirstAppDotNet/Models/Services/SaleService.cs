@@ -36,7 +36,7 @@ namespace P5CreateFirstAppDotNet.Models.Services
                 sale = new Sale
                 {
                     VehicleId = vehicleId,
-                    SaleDate = vehicleViewModel.SaleDate ?? DateTime.Now,
+                    SaleDate = vehicleViewModel.SaleDate,
                     SalePrice = vehicleViewModel.SalePrice ?? 0
                 };
                 await _saleRepository.AddSaleAsync(sale);
