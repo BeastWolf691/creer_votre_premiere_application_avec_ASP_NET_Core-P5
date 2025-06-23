@@ -71,7 +71,7 @@ namespace P5CreateFirstAppDotNet.Controllers
             if (media is not null && media.Any())
             {
                 var firstMedia = media.FirstOrDefault();
-                vehicle.MediaPath = firstMedia?.Path;
+                vehicle.MediaPath = firstMedia.Path;
                 vehicle.MediaLabel = firstMedia?.Label;
             }
 
@@ -95,53 +95,57 @@ namespace P5CreateFirstAppDotNet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Label,VIN,Description,YearOfProductionId,VehicleBrandId,VehicleModelId,VehicleTrimId,Status,PurchaseDate,PurchasePrice,MediaFiles")] VehicleViewModel vehicleViewModel)
         {
-            if (!ModelState.IsValid)
-            {
-                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    _logger.LogError("Erreurs dans CREATE/POST : " + error.ErrorMessage);
-                }
-                return View(vehicleViewModel);
-            }
-
+            // Validation métier : modèle appartient à la marque
             bool isModelValid = await _vehicleService.ValidateVehicleModelWithBrandAsync(vehicleViewModel.VehicleModelId, vehicleViewModel.VehicleBrandId);
             if (!isModelValid)
             {
                 ModelState.AddModelError("VehicleModelId", "Le modèle sélectionné n'appartient pas à la marque choisie.");
+            }
+
+            // Validation métier : au moins une image
+            if (vehicleViewModel.MediaFiles == null || vehicleViewModel.MediaFiles.Count == 0)
+            {
+                ModelState.AddModelError("MediaFiles", "Une image est requise pour la création du véhicule.");
+            }
+
+            // Vérification finale : s’il y a des erreurs de modèle ou de validation métier
+            if (!ModelState.IsValid)
+            {
+                // Logging optionnel
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    _logger.LogError("Erreurs dans CREATE/POST : " + error.ErrorMessage);
+                }
+
+                // Réinitialisation des listes déroulantes
+                vehicleViewModel = await PopulateViewModelSelectListsAsync(vehicleViewModel);
                 return View(vehicleViewModel);
             }
 
-            if (ModelState.IsValid)
+            // Création du véhicule
+            Vehicle vehicle = await _vehicleService.AddVehicleAsync(vehicleViewModel);
+
+            // Création de l'achat
+            Purchase purchase = new Purchase
             {
-                Vehicle vehicle = await _vehicleService.AddVehicleAsync(vehicleViewModel);
+                VehicleId = vehicle.Id,
+                PurchaseDate = vehicleViewModel.PurchaseDate ?? DateTime.Now,
+                PurchasePrice = vehicleViewModel.PurchasePrice ?? 0
+            };
+            await _purchaseService.AddPurchaseAsync(purchase);
 
-                Purchase purchase = new Purchase
-                {
-                    VehicleId = vehicle.Id,
-                    PurchaseDate = vehicleViewModel.PurchaseDate ?? DateTime.Now,
-                    PurchasePrice = vehicleViewModel.PurchasePrice ?? 0
-                };
-                await _purchaseService.AddPurchaseAsync(purchase);
-
-                if (vehicleViewModel.MediaFiles != null && vehicleViewModel.MediaFiles.Count > 0)
-                {
-                    try
-                    {
-                        await _mediaService.ProcessMediaFilesAsync(vehicle.Id, vehicleViewModel.MediaFiles);
-                        return View("CreateConfirmation");
-                    }
-                    catch (InvalidOperationException ex)
-                    {
-                        ModelState.AddModelError("MediaFiles", ex.Message);
-                        return View(vehicleViewModel);
-                    }
-                }
+            // Traitement des médias
+            try
+            {
+                await _mediaService.ProcessMediaFilesAsync(vehicle.Id, vehicleViewModel.MediaFiles);
                 return View("CreateConfirmation");
             }
-
-            vehicleViewModel = await PopulateViewModelSelectListsAsync(vehicleViewModel);
-
-            return View(vehicleViewModel);
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError("MediaFiles", ex.Message);
+                vehicleViewModel = await PopulateViewModelSelectListsAsync(vehicleViewModel);
+                return View(vehicleViewModel);
+            }
         }
 
         // GET: Edit/5
