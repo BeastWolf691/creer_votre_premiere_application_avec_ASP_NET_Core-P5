@@ -11,7 +11,7 @@ namespace P5CreateFirstAppDotNet.Models.Entities
         public int Id { get; set; }
         public string Label { get; set; } = null!;
         public string VIN { get; set; } = null!;
-        public string Description { get; set; } = null!;
+        public string? Description { get; set; }
         public int YearOfProductionId { get; set; }
         public int VehicleBrandId { get; set; }
         public int VehicleModelId { get; set; }

@@ -8,9 +8,7 @@ namespace P5CreateFirstAppDotNet.Models.Entities
     public class VehicleBrand
     {
         public int Id { get; set; }
-        public string Brand { get; set; } = null!;
-        public int VehicleBrandId { get; set; }
-        public virtual ICollection<VehicleModel> VehicleModels { get; set; } = new List<VehicleModel>();
+        public string Brand { get; set; } = null!;        public virtual ICollection<VehicleModel> VehicleModels { get; set; } = new List<VehicleModel>();
         public virtual ICollection<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
     }
 }

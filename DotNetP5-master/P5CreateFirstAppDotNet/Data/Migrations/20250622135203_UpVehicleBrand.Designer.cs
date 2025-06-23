@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using P5CreateFirstAppDotNet.Data;
 
@@ -11,9 +12,11 @@ using P5CreateFirstAppDotNet.Data;
 namespace P5CreateFirstAppDotNet.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250622135203_UpVehicleBrand")]
+    partial class UpVehicleBrand
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -545,13 +548,6 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                             SaleDate = new DateTime(2023, 2, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             SalePrice = 15000.00m,
                             VehicleId = 3
-                        },
-                        new
-                        {
-                            Id = 3,
-                            SaleDate = new DateTime(2024, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            SalePrice = 25000.00m,
-                            VehicleId = 8
                         });
                 });
 
@@ -598,6 +594,7 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Label")
@@ -665,7 +662,7 @@ namespace P5CreateFirstAppDotNet.Data.Migrations
                             Id = 3,
                             Description = "Vehicle description 3",
                             Label = "Vehicle 3",
-                            Status = 2,
+                            Status = 0,
                             VIN = "1HGCM82633A789456",
                             VehicleBrandId = 3,
                             VehicleModelId = 3,

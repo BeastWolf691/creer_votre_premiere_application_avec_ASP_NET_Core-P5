@@ -17,12 +17,13 @@
     }
 }
 
-<div class="container" style="max-width: 900px; margin: 40px auto;">
+<main class="container" style="max-width: 900px; margin: 40px auto;">
 	<a asp-action="Index" class="btn btn-return mb-4">
 		&#x27F5; Retour
 	</a>
 
-    <div class="row align-items-start">
+    <article class="row align-items-start" aria-labelledby="voiture-title">
+
         <div class="col-md-5 text-center mb-3">
             <img src="@Model.MediaPath" alt="Image du véhicule @Model.MediaPath" class="img-fluid rounded border"
                  style="max-height: 400px;" />
@@ -44,70 +45,55 @@
                 </div>
             }
 
-            <h5 class="fw-bold">
-                Prix de vente <span class="fw-normal">@prixAffiche</span>
-            </h5>
-            <p><strong>Année :</strong> @Model.YearOfProduction</p>
-            @if (Model.Status == VehicleStatus.Vendu)
-            {
-                <div aria-live="polite">
-                    Vendue le @(Model.SaleDate?.ToShortDateString() ?? "date inconnue") pour @(Model.SalePrice?.ToString("N0") ?? "prix inconnu") €
-                </div>
-            }
-            <p><strong>Marque :</strong> @Model.BrandName</p>
-            <p><strong>Modèle :</strong> @Model.ModelName</p>
-            <p><strong>Finition :</strong> @Model.TrimName</p>
+            <ul class="list-unstyled">
+                <li class="fw-bold">
+                    Prix de vente <span class="fw-normal">@prixAffiche</span>
+                </li>
 
-            <div class="mb-3">
-                <h5>Description</h5>
-                <p>@Model.Description</p>
-            </div>
+                <li><strong>Année :</strong> @Model.YearOfProduction</li>
+
+                @if (Model.Status == VehicleStatus.Vendu)
+                {
+                    <li aria-live="polite">
+                        <strong>Statut :</strong> Vendue le @(Model.SaleDate?.ToShortDateString() ?? "date inconnue")
+                        pour @(Model.SalePrice?.ToString("N0") ?? "prix inconnu") €
+                    </li>
+                }
+
+                <li><strong>Marque :</strong> @Model.BrandName</li>
+                <li><strong>Modèle :</strong> @Model.ModelName</li>
+                <li><strong>Finition :</strong> @Model.TrimName</li>
+
+                <li>
+                    <strong>Description :</strong><br />
+                    <span>@Model.Description</span>
+                </li>
+            </ul>
 
             @if (User.IsInRole("Admin"))
             {
-                <div class="container">
-                    <div class="row mb-2 align-items-center">
-                        <div class="col-sm-4 fw-semibold">Prix d'achat :</div>
-                        <div class="col-sm-8">@Model.PurchasePrice?.ToString("N0") €</div>
-                    </div>
-                    <div class="row mb-2 align-items-center">
-                        <div class="col-sm-4 fw-semibold">Date d'achat :</div>
-                        <div class="col-sm-8">@Model.PurchaseDate?.ToShortDateString()</div>
-                    </div>
+                <ul class="list-unstyled">
+                    <li><strong>Prix d'achat :</strong> @Model.PurchasePrice?.ToString("N0") €</li>
+                    <li><strong>Date d'achat :</strong> @Model.PurchaseDate?.ToShortDateString()</li>
 
-                    @if (@Model.RepairDate != null || @Model.RepairCost != null)
+                    @if (Model.RepairDate != null || Model.RepairCost != null)
                     {
-                        <div class="row mb-2 align-items-center">
-                            <div class="col-sm-4 fw-semibold">Date de la réparation :</div>
-                            <div class="col-sm-8">@Model.RepairDate?.ToShortDateString()</div>
-                        </div>
-                        <div class="row mb-2 align-items-center">
-                            <div class="col-sm-4 fw-semibold">Description de la réparation :</div>
-                            <div class="col-sm-8">@Model.RepairDescription</div>
-                        </div>
-                        <div class="row mb-2 align-items-center">
-                            <div class="col-sm-4 fw-semibold">Prix de la réparation :</div>
-                            <div class="col-sm-8">@Model.RepairCost?.ToString("N0") €</div>
-                        </div>
+                        <li><strong>Date de la réparation :</strong> @Model.RepairDate?.ToShortDateString()</li>
+                        <li><strong>Description de la réparation :</strong> @Model.RepairDescription</li>
+                        <li><strong>Prix de la réparation :</strong> @Model.RepairCost?.ToString("N0") €</li>
                     }
 
-                    @if (@Model.SaleDate != null || @Model.SalePrice != null)
+                    @if (Model.SaleDate != null || Model.SalePrice != null)
                     {
-                        <div class="row mb-2 align-items-center">
-                            <div class="col-sm-4 fw-semibold">Date de la vente :</div>
-                            <div class="col-sm-8">@Model.SaleDate?.ToShortDateString()</div>
-                        </div>
-                        <div class="row mb-2 align-items-center">
-                            <div class="col-sm-4 fw-semibold">Prix de la vente :</div>
-                            <div class="col-sm-8">@Model.SalePrice?.ToString("N0") €</div>
-                        </div>
+                        <li><strong>Date de la vente :</strong> @Model.SaleDate?.ToShortDateString()</li>
+                        <li><strong>Prix de la vente :</strong> @Model.SalePrice?.ToString("N0") €</li>
                     }
-                </div>
+                </ul>
             }
         </div>
-    </div>
+    </article>
 
-</div>
+</main>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

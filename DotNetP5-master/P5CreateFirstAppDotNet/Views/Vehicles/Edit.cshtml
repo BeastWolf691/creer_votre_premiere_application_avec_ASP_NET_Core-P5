@@ -4,7 +4,7 @@
     ViewData["Title"] = "Modifier un véhicule";
 }
 
-<div class="container" style="max-width: 800px; margin: 40px auto;">
+<main class="container" style="max-width: 800px; margin: 40px auto;">
     <h2 class="mt-5 mb-3" style="text-align: center">Modifier un véhicule</h2>
 
     <form asp-action="Edit" method="post" enctype="multipart/form-data">
@@ -166,7 +166,7 @@
         <button type="submit" class="btn btn-custom">Mettre à jour</button>
         <a asp-action="Index" class="btn btn-secondary ms-2">Annuler</a>
     </form>
-</div>
+</main>
 
 @section Scripts {
     <partial name="_scripts" />
