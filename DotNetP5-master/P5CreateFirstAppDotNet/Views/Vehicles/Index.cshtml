@@ -42,9 +42,10 @@
                             </div>
                             <div class="vehicle-info">
                                 <div>
-                                    <h5 class="card-title">@item.Label</h5>
 
-                                    <ul class="car-details list-unstyled mb-0">
+
+									<ul class="car-details list-unstyled mb-0">
+                                        <li class="card-title"><strong>@item.Label</strong></li>
                                         <li><strong>Prix de vente</strong><br /> @item.SalePrice?.ToString("N0") €</li>
                                         <li><strong>Année :</strong> @item.YearOfProduction</li>
                                         <li><strong>Marque :</strong> @item.BrandName</li>
