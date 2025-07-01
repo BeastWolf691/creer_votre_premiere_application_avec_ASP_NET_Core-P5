@@ -47,10 +47,10 @@ Avant de lancer le projet, veillez à disposer de :
 1. Clonez le dépôt :
     - git clone [https://github.com/BeastWolf691/creer_votre_premiere_application_avec_ASP_NET_Core-P5.git]
    
-3. Ouvrez le projet dans Visual Studio 2022 et se positionner sur la branche  :
+2. Ouvrez le projet dans Visual Studio 2022 et se positionner sur la branche  :
     - git checkout Steven
 
-4. Accéder au dossier contenant le projet principal :  
+3. Accéder au dossier contenant le projet principal :  
 cd creer_votre_premiere_application_avec_ASP_NET_Core-P5/DotNetP5-master/P5CreateFirstAppDotNet
      
 4. Restaurer les dépendances :  
